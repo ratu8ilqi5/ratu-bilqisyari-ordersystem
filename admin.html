@@ -7,18 +7,24 @@
     <!-- Google Fonts: Space Grotesk & VT323 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-color: #2b2b2b;
-            --panel-bg: #383838;
+            --bg-color: #22252a;
+            --panel-bg: #2d3139;
+            --card-bg: #24272e;
             --accent-color: #d4a373;
-            --accent-hover: #c39262;
-            --text-color: #f4f1de;
-            --border-pixel: #1a1a1a;
+            --accent-hover: #e0b080;
+            --text-main: #f8f9fa;
+            --text-muted: #a0aab8;
+            --border-color: #3f4450;
+            --border-radius-sm: 8px;
+            --border-radius-lg: 14px;
             --danger-color: #e76f51;
+            --danger-hover: #f47b5d;
             --success-color: #2a9d8f;
+            --success-hover: #34b3a4;
         }
 
         * {
@@ -30,79 +36,88 @@
 
         body {
             background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 20px;
+            color: var(--text-main);
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
+            line-height: 1.5;
         }
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 960px;
             background-color: var(--panel-bg);
-            border: 4px solid var(--border-pixel);
-            box-shadow: 6px 6px 0px var(--border-pixel);
-            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         /* Header Style */
         header {
             text-align: center;
-            border-bottom: 4px dashed var(--border-pixel);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 24px;
+            margin-bottom: 28px;
         }
 
         h1 {
             font-family: 'VT323', monospace;
-            font-size: 3rem;
+            font-size: 3.2rem;
             color: var(--accent-color);
             letter-spacing: 2px;
-            text-shadow: 2px 2px 0px var(--border-pixel);
+            margin-bottom: 4px;
         }
 
         .subtitle {
             font-size: 0.95rem;
-            opacity: 0.8;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
-        /* Navigation Buttons */
+        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 28px;
             flex-wrap: wrap;
         }
 
         .pixel-btn {
-            font-family: 'VT323', monospace;
-            font-size: 1.4rem;
-            background-color: var(--accent-color);
-            color: var(--border-pixel);
-            border: 3px solid var(--border-pixel);
-            padding: 8px 16px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            background-color: var(--card-bg);
+            color: var(--text-muted);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: 10px 20px;
             cursor: pointer;
-            box-shadow: 3px 3px 0px var(--border-pixel);
-            transition: all 0.1s ease;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .pixel-btn:hover {
-            background-color: var(--accent-hover);
-            transform: translate(-1px, -1px);
-            box-shadow: 4px 4px 0px var(--border-pixel);
-        }
-
-        .pixel-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px var(--border-pixel);
+            background-color: var(--border-color);
+            color: var(--text-main);
+            transform: translateY(-1px);
         }
 
         .pixel-btn.active {
-            background-color: var(--text-color);
-            color: var(--border-pixel);
+            background-color: var(--accent-color);
+            color: #1a1a1a;
+            border-color: var(--accent-color);
         }
 
         .pixel-btn.danger {
+            background-color: rgba(231, 111, 81, 0.15);
+            color: var(--danger-color);
+            border-color: rgba(231, 111, 81, 0.4);
+        }
+
+        .pixel-btn.danger:hover {
             background-color: var(--danger-color);
             color: #fff;
         }
@@ -110,6 +125,11 @@
         .pixel-btn.success {
             background-color: var(--success-color);
             color: #fff;
+            border-color: var(--success-color);
+        }
+
+        .pixel-btn.success:hover {
+            background-color: var(--success-hover);
         }
 
         /* Views Content */
@@ -121,89 +141,132 @@
             display: block;
         }
 
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
         /* Form Styles */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
+            color: var(--text-muted);
         }
 
         input, select {
             width: 100%;
-            padding: 10px;
-            background-color: var(--bg-color);
-            border: 3px solid var(--border-pixel);
-            color: var(--text-color);
-            font-size: 1rem;
+            padding: 12px 16px;
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-main);
+            font-size: 0.95rem;
             outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-color);
         }
 
         /* Table Style */
         .table-responsive {
             overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            border: 2px solid var(--border-pixel);
-            padding: 10px;
+            background-color: var(--card-bg);
             text-align: left;
         }
 
-        th {
-            background-color: var(--border-pixel);
-            color: var(--accent-color);
-            font-family: 'VT323', monospace;
-            font-size: 1.3rem;
+        th, td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
         }
 
-        tr:nth-child(even) {
-            background-color: rgba(0, 0, 0, 0.1);
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.safe {
+            background-color: rgba(42, 157, 143, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-badge.warning {
+            background-color: rgba(231, 111, 81, 0.2);
+            color: var(--danger-color);
         }
 
         .action-btns {
             display: flex;
-            gap: 5px;
+            gap: 6px;
         }
 
         .action-btns button {
-            padding: 2px 8px;
-            font-size: 1.1rem;
+            padding: 6px 12px;
+            font-size: 0.85rem;
         }
 
         /* Stats Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
         }
 
         .stat-card {
-            background-color: var(--bg-color);
-            border: 3px solid var(--border-pixel);
-            padding: 15px;
-            text-align: center;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: 20px;
+            text-align: left;
         }
 
         .stat-card h3 {
-            font-family: 'VT323', monospace;
-            font-size: 1.5rem;
-            color: var(--accent-color);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
         }
 
         .stat-card p {
-            font-size: 1.8rem;
-            font-weight: bold;
+            font-family: 'VT323', monospace;
+            font-size: 2.8rem;
+            color: var(--accent-color);
+            line-height: 1;
         }
     </style>
 </head>
@@ -217,9 +280,9 @@
 
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <button class="pixel-btn active" onclick="switchTab('dashboard')">📊 DASHBOARD</button>
-            <button class="pixel-btn" onclick="switchTab('kelola')">📦 KELOLA STOK</button>
-            <button class="pixel-btn" onclick="switchTab('tambah')">➕ TAMBAH PRODUK</button>
+            <button class="pixel-btn active" onclick="switchTab('dashboard', event)">📊 DASHBOARD</button>
+            <button class="pixel-btn" onclick="switchTab('kelola', event)">📦 KELOLA STOK</button>
+            <button class="pixel-btn" onclick="switchTab('tambah', event)">➕ TAMBAH PRODUK</button>
         </div>
 
         <!-- TAB 1: DASHBOARD -->
@@ -238,7 +301,8 @@
                     <p id="stat-stok-tipis">0</p>
                 </div>
             </div>
-            <h2>Ringkasan Inventaris 📝</h2>
+
+            <h2 class="section-title">Ringkasan Inventaris 📝</h2>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -258,7 +322,7 @@
 
         <!-- TAB 2: KELOLA STOK -->
         <div id="tab-kelola" class="tab-view">
-            <h2>Kelola Stok & Inventaris 📦</h2>
+            <h2 class="section-title">Kelola Stok & Inventaris 📦</h2>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -278,14 +342,14 @@
 
         <!-- TAB 3: TAMBAH PRODUK -->
         <div id="tab-tambah" class="tab-view">
-            <h2>Tambah Produk Baru ➕</h2>
+            <h2 class="section-title">Tambah Produk Baru ➕</h2>
             <form id="form-tambah-produk" onsubmit="tambahProdukBaru(event)">
                 <div class="form-group">
-                    <label for="nama-produk">Nama Produk 👗:</label>
+                    <label for="nama-produk">Nama Produk 👗</label>
                     <input type="text" id="nama-produk" placeholder="Contoh: Abaya Premium Mocca" required>
                 </div>
                 <div class="form-group">
-                    <label for="kategori-produk">Kategori 🏷️:</label>
+                    <label for="kategori-produk">Kategori 🏷️</label>
                     <select id="kategori-produk" required>
                         <option value="Abaya">Abaya 👗</option>
                         <option value="Khimar">Khimar 🧕</option>
@@ -294,10 +358,10 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="stok-awal">Stok Awal 🔢:</label>
+                    <label for="stok-awal">Stok Awal 🔢</label>
                     <input type="number" id="stok-awal" min="0" value="10" required>
                 </div>
-                <button type="submit" class="pixel-btn success">💾 SIMPAN PRODUK</button>
+                <button type="submit" class="pixel-btn success" style="margin-top: 8px;">💾 SIMPAN PRODUK</button>
             </form>
         </div>
     </div>
@@ -311,25 +375,22 @@
         ];
 
         // Fungsi Navigasi Tab
-        function switchTab(tabName) {
-            // Sembunyikan semua konten tab
+        function switchTab(tabName, event) {
             const allTabs = document.querySelectorAll('.tab-view');
             allTabs.forEach(tab => tab.classList.remove('active'));
 
-            // Hapus status aktif dari semua tombol navigasi
             const allBtns = document.querySelectorAll('.nav-tabs .pixel-btn');
             allBtns.forEach(btn => btn.classList.remove('active'));
 
-            // Tampilkan tab yang dipilih
             const selectedTab = document.getElementById('tab-' + tabName);
             if(selectedTab) {
                 selectedTab.classList.add('active');
             }
 
-            // Aktifkan tombol yang diklik
-            event.currentTarget.classList.add('active');
+            if(event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
 
-            // Refresh Tampilan Data
             renderApp();
         }
 
@@ -355,13 +416,16 @@
                 tr.innerHTML = `
                     <td><b>${item.nama}</b></td>
                     <td>${item.kategori}</td>
-                    <td>${item.stok} Pcs</td>
-                    <td>${item.stok < 5 ? '🚨 Stok Menipis' : '✅ Aman'}</td>
+                    <td><b>${item.stok}</b> Pcs</td>
+                    <td>
+                        <span class="status-badge ${item.stok < 5 ? 'warning' : 'safe'}">
+                            ${item.stok < 5 ? '🚨 Stok Menipis' : '✅ Aman'}
+                        </span>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            // Update Statistik Card
             document.getElementById('stat-total-produk').innerText = dataStok.length;
             document.getElementById('stat-total-stok').innerText = totalStok;
             document.getElementById('stat-stok-tipis').innerText = stokTipis;
@@ -376,7 +440,7 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><b>${item.nama}</b></td>
-                    <td>${item.stok} Pcs</td>
+                    <td><b>${item.stok}</b> Pcs</td>
                     <td>
                         <div class="action-btns">
                             <button class="pixel-btn" onclick="ubahStok(${item.id}, -1)">- ➖</button>
@@ -422,7 +486,10 @@
             document.getElementById('form-tambah-produk').reset();
             
             alert("Produk berhasil ditambahkan! 🎉");
-            switchTab('kelola'); // Langsung beralih ke halaman kelola stok
+            
+            // Pindah otomatis ke tab kelola stok
+            const kelolaBtn = document.querySelectorAll('.nav-tabs .pixel-btn')[1];
+            switchTab('kelola', { currentTarget: kelolaBtn });
         }
 
         // Fungsi Hapus Produk
