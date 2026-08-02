@@ -6,56 +6,62 @@
   <title>Admin Dashboard - Munchkin Munch</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #F8FAFC; color: #0F172A; margin: 0; padding: 20px 12px; }
-    .container { max-width: 500px; margin: 0 auto; }
+    * { box-sizing: border-box; font-family: 'Courier New', Courier, monospace, -apple-system, sans-serif; }
+    body { background-color: #F3F0E6; color: #000000; margin: 0; padding: 20px 12px; }
+    .container { max-width: 480px; margin: 0 auto; }
     
-    .header { text-align: center; margin-bottom: 20px; }
-    .header h2 { margin: 0; font-size: 20px; font-weight: 800; }
-    .header p { margin: 4px 0 0; font-size: 13px; color: #64748B; }
+    /* Y2K HEADER */
+    .header { text-align: center; margin-bottom: 20px; background: #FFF; border: 2.5px solid #000; padding: 12px; box-shadow: 4px 4px 0px #000; border-radius: 12px; }
+    .header h2 { margin: 0; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; }
+    .header p { margin: 4px 0 0; font-size: 11px; font-weight: bold; color: #555; }
 
-    /* MENU VERTIKAL */
-    .nav-vertical { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    /* MENU VERTIKAL Y2K NEO-BRUTALISM */
+    .nav-vertical { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
     .nav-btn {
-      width: 100%; background: #FFFFFF; border: 1.5px solid #E2E8F0;
-      padding: 12px 16px; border-radius: 12px; font-weight: 700; font-size: 13px;
-      color: #475569; text-align: left; display: flex; justify-content: space-between;
-      cursor: pointer; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      width: 100%; background: #FFFFFF; border: 2.5px solid #000000;
+      padding: 12px 14px; border-radius: 10px; font-weight: 800; font-size: 13px;
+      color: #000000; text-align: left; display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; transition: all 0.1s ease; box-shadow: 3px 3px 0px #000000;
     }
+    .nav-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #000000; }
     .nav-btn.active {
-      background: #0F172A; color: #FFFFFF; border-color: #0F172A;
-      box-shadow: 0 4px 12px rgba(15,23,42,0.15);
+      background: #FFE600; /* Y2K Yellow */
+      border-color: #000000; box-shadow: 4px 4px 0px #000000;
     }
 
-    /* CARD GROUPING UXCEL STYLE */
+    /* CARD GROUPING NEO-BRUTALIST */
     .card-group {
-      background: #FFFFFF; border-radius: 16px; padding: 18px;
-      margin-bottom: 16px; border: 1px solid #E2E8F0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      background: #FFFFFF; border-radius: 12px; padding: 16px;
+      margin-bottom: 16px; border: 2.5px solid #000000; box-shadow: 4px 4px 0px #000000;
     }
-    .card-title { font-size: 14px; font-weight: 800; margin-bottom: 12px; color: #0F172A; }
+    .card-title { font-size: 13px; font-weight: 900; margin-bottom: 12px; color: #000; text-transform: uppercase; letter-spacing: 0.5px; }
 
     .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px; text-transform: uppercase; }
+    label { display: block; font-size: 10px; font-weight: 900; color: #000; margin-bottom: 4px; text-transform: uppercase; }
     input, select {
-      width: 100%; padding: 10px 12px; background: #F1F5F9; border: 1px solid transparent;
-      border-radius: 10px; font-size: 13px; font-weight: 600; color: #0F172A; outline: none;
+      width: 100%; padding: 10px; background: #FAF9F5; border: 2px solid #000;
+      border-radius: 8px; font-size: 12px; font-weight: 700; color: #000; outline: none;
     }
-    input:focus, select:focus { background: #FFF; border-color: #0F172A; }
+    input:focus, select:focus { background: #FFF; border-color: #000; box-shadow: 2px 2px 0px #000; }
 
-    .btn { width: 100%; padding: 11px; border: none; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 6px; }
-    .btn-dark { background: #0F172A; color: #FFF; }
-    .btn-green { background: #10B981; color: #FFF; }
-    .btn-wa { background: #25D366; color: #FFF; }
-    .btn-light { background: #F1F5F9; color: #334155; }
+    /* BUTTONS NEO-BRUTALISM */
+    .btn { width: 100%; padding: 10px; border: 2px solid #000; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; margin-top: 6px; box-shadow: 2px 2px 0px #000; transition: 0.1s; }
+    .btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0px #000; }
+    .btn-dark { background: #000000; color: #FFF; }
+    .btn-green { background: #50E3C2; color: #000; } /* Y2K Mint/Green */
+    .btn-wa { background: #25D366; color: #000; }
+    .btn-light { background: #FAF9F5; color: #000; }
 
-    .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-    .badge-pending { background: #FEF08A; color: #854D0E; }
-    .badge-paid { background: #DCFCE7; color: #166534; }
+    /* BADGES */
+    .badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 900; border: 1.5px solid #000; text-transform: uppercase; }
+    .badge-pending { background: #FFD166; color: #000; }
+    .badge-paid { background: #06D6A0; color: #000; }
 
+    /* METRIC GRID */
     .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .metric-box { background: #F8FAFC; border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #E2E8F0; }
-    .metric-val { font-size: 16px; font-weight: 800; color: #0F172A; margin-top: 2px; }
-    .metric-lbl { font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase; }
+    .metric-box { background: #FAF9F5; border-radius: 8px; padding: 10px; text-align: center; border: 2px solid #000; }
+    .metric-val { font-size: 15px; font-weight: 900; color: #000; margin-top: 2px; }
+    .metric-lbl { font-size: 9px; font-weight: 900; color: #000; text-transform: uppercase; }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -69,12 +75,12 @@
       <p>Dashboard Admin Munchkin Munch</p>
     </div>
 
-    <!-- SUB MENU VERTIKAL -->
+    <!-- SUB MENU VERTIKAL CLEAN Y2K -->
     <div class="nav-vertical">
-      <button class="nav-btn active" onclick="switchTab('orders', this)"><span>📋 Pesanan Masuk</span> <span>›</span></button>
-      <button class="nav-btn" onclick="switchTab('stock', this)"><span>📦 Kelola Stok Produk</span> <span>›</span></button>
-      <button class="nav-btn" onclick="switchTab('rekap', this)"><span>📊 Rekap Penjualan</span> <span>›</span></button>
-      <button class="nav-btn" onclick="switchTab('setting', this)"><span>⚙️ Setting Resi Thermal</span> <span>›</span></button>
+      <button class="nav-btn active" onclick="switchTab('orders', this)"><span>📋 Pesanan Masuk</span> <span>➔</span></button>
+      <button class="nav-btn" onclick="switchTab('stock', this)"><span>📦 Kelola Stok Produk</span> <span>➔</span></button>
+      <button class="nav-btn" onclick="switchTab('rekap', this)"><span>📊 Rekap Penjualan</span> <span>➔</span></button>
+      <button class="nav-btn" onclick="switchTab('setting', this)"><span>⚙️ Setting Resi Thermal</span> <span>➔</span></button>
     </div>
 
     <!-- TAB 1: ORDERS -->
@@ -82,7 +88,7 @@
       <div class="card-group">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
           <div class="card-title" style="margin:0;">📋 Filter Orders</div>
-          <button class="btn btn-light" style="width:auto; padding:6px 12px; margin:0; font-size:11px;" onclick="fetchOrders()">🔄 Refresh</button>
+          <button class="btn btn-light" style="width:auto; padding:4px 10px; margin:0; font-size:10px;" onclick="fetchOrders()">🔄 Refresh</button>
         </div>
         <select id="filter-status" onchange="renderOrders()">
           <option value="ALL">Semua Status</option>
@@ -201,28 +207,32 @@
     }
 
     async function fetchProducts() {
-      const { data } = await supabase.from('products').select('*').order('name');
-      productsData = data || [];
-      renderStock();
+      const { data, error } = await supabase.from('products').select('*').order('name');
+      if (!error) {
+        productsData = data || [];
+        renderStock();
+      }
     }
 
     async function fetchOrders() {
-      const { data } = await supabase.from('orders').select('*, products(name)').order('created_at', { ascending: false });
-      ordersData = data || [];
-      renderOrders();
-      calculateRekap();
+      const { data, error } = await supabase.from('orders').select('*, products(name)').order('created_at', { ascending: false });
+      if (!error) {
+        ordersData = data || [];
+        renderOrders();
+        calculateRekap();
+      }
     }
 
     function renderStock() {
       const container = document.getElementById('stock-list');
-      container.innerHTML = productsData.length ? '' : '<p style="font-size:12px; color:#64748B;">Belum ada produk.</p>';
+      container.innerHTML = productsData.length ? '' : '<p style="font-size:11px; color:#555;">Belum ada produk.</p>';
       productsData.forEach(p => {
         container.innerHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #F1F5F9; font-size:13px;">
-            <div><b>${p.name}</b><br><small style="color:#64748B">Rp${Number(p.price).toLocaleString('id-ID')}</small></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1.5px dashed #000; font-size:12px;">
+            <div><b>${p.name}</b><br><small style="color:#555">Rp${Number(p.price).toLocaleString('id-ID')}</small></div>
             <div style="display:flex; align-items:center; gap:6px;">
-              <small style="font-weight:700;">STOK:</small>
-              <input type="number" value="${p.stock}" onblur="updateStock('${p.id}', this.value)" style="width:55px; padding:4px; text-align:center;">
+              <small style="font-weight:900;">STOK:</small>
+              <input type="number" value="${p.stock}" onblur="updateStock('${p.id}', this.value)" style="width:55px; padding:4px; text-align:center; border:2px solid #000; border-radius:6px; font-weight:bold;">
             </div>
           </div>`;
       });
@@ -252,11 +262,12 @@
       const filter = document.getElementById('filter-status').value;
       const list = filter === 'ALL' ? ordersData : ordersData.filter(o => o.status === filter);
 
-      container.innerHTML = list.length ? '' : '<p style="font-size:12px; color:#64748B; text-align:center; padding:15px;">Tidak ada pesanan.</p>';
+      container.innerHTML = list.length ? '' : '<p style="font-size:11px; color:#555; text-align:center; padding:15px;">Tidak ada pesanan.</p>';
 
       list.forEach(o => {
         const isPaid = o.status === 'paid';
         const dateStr = new Date(o.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        const prodName = o.products?.name || 'Produk Munchkin';
 
         container.innerHTML += `
           <div class="card-group" style="padding:14px;">
@@ -264,11 +275,11 @@
               <b>${o.customer_name}</b>
               <span class="badge ${isPaid ? 'badge-paid' : 'badge-pending'}">${o.status}</span>
             </div>
-            <div style="font-size:11px; color:#64748B; margin:4px 0 8px;">📅 ${dateStr} • 📱 WA: ${o.whatsapp}</div>
-            <div style="background:#F8FAFC; border-radius:8px; padding:8px; font-size:12px; border:1px solid #E2E8F0; margin-bottom:8px;">
-              <div>📦 <b>${o.products?.name || 'Produk'}</b> (x${o.quantity})</div>
+            <div style="font-size:11px; color:#555; margin:4px 0 8px; font-weight:bold;">📅 ${dateStr} • 📱 WA: ${o.whatsapp}</div>
+            <div style="background:#FAF9F5; border-radius:8px; padding:8px; font-size:12px; border:2px solid #000; margin-bottom:8px;">
+              <div>📦 <b>${prodName}</b> (x${o.quantity})</div>
               <div>📍 ${o.address} (${o.postal_code || '-'})</div>
-              <div style="font-weight:800; margin-top:4px; color:#0F172A;">Total: Rp${Number(o.total_price).toLocaleString('id-ID')}</div>
+              <div style="font-weight:900; margin-top:4px; color:#000;">Total: Rp${Number(o.total_price).toLocaleString('id-ID')}</div>
             </div>
             <button class="btn btn-wa" onclick="sendWA('${o.id}', '${o.customer_name}', '${o.whatsapp}')">💬 1. Kirim Invoice WA</button>
             <div style="display:flex; gap:6px;">
@@ -288,9 +299,11 @@
     async function setPaid(orderId, productId, qty) {
       await supabase.from('orders').update({ status: 'paid' }).eq('id', orderId);
       const prod = productsData.find(p => p.id === productId);
-      if (prod) await supabase.from('products').update({ stock: Math.max(0, prod.stock - qty) }).eq('id', productId);
-      fetchProducts();
-      fetchOrders();
+      if (prod) {
+        await supabase.from('products').update({ stock: Math.max(0, prod.stock - qty) }).eq('id', productId);
+      }
+      await fetchProducts();
+      await fetchOrders();
     }
 
     function printLabel(id) {
@@ -302,29 +315,30 @@
       const sender = localStorage.getItem('cfg_sender') || 'Munchkin Munch';
       const phone = localStorage.getItem('cfg_phone') || '';
       const footer = localStorage.getItem('cfg_footer') || 'Terima kasih telah berbelanja! 🍪';
+      const prodName = o.products?.name || 'Produk Munchkin';
 
       const win = window.open('', '_blank');
       win.document.write(`
         <html><head><title>Label - ${o.customer_name}</title>
         <style>
           @page { margin: 0; }
-          body { font-family: sans-serif; width: ${is58 ? '54mm' : '76mm'}; margin: 0 auto; padding: 6px; font-size: ${isLarge ? '13px' : '11px'}; line-height: 1.2; }
+          body { font-family: monospace; width: ${is58 ? '54mm' : '76mm'}; margin: 0 auto; padding: 6px; font-size: ${isLarge ? '13px' : '11px'}; line-height: 1.2; }
           .box { border: 2px solid #000; padding: 6px; border-radius: 4px; }
-          .header { text-align: center; border-bottom: 1px dashed #000; padding-bottom: 4px; margin-bottom: 6px; font-weight: bold; }
-          .sec { border-bottom: 1px dashed #000; padding-bottom: 4px; margin-bottom: 6px; }
-          .addr { font-size: ${isLarge ? '15px' : '13px'}; font-weight: bold; margin-top: 2px; }
+          .header { text-align: center; border-bottom: 1.5px dashed #000; padding-bottom: 4px; margin-bottom: 6px; font-weight: bold; }
+          .sec { border-bottom: 1.5px dashed #000; padding-bottom: 4px; margin-bottom: 6px; }
+          .addr { font-size: ${isLarge ? '14px' : '12px'}; font-weight: bold; margin-top: 2px; }
         </style></head><body>
         <div class="box">
           <div class="header">${sender}<br><small>PENGIRIM: ${sender} ${phone ? '('+phone+')' : ''}</small></div>
           <div class="sec">
             <small>PENERIMA:</small>
-            <div style="font-size:14px; font-weight:bold;">${o.customer_name}</div>
+            <div style="font-size:13px; font-weight:bold;">${o.customer_name}</div>
             <div>WA: ${o.whatsapp}</div>
             <div class="addr">${o.address}</div>
             <div>Kode Pos: ${o.postal_code || '-'}</div>
           </div>
           <div class="sec">
-            <div><b>ISI PAKET:</b> ${o.products?.name || 'Produk'} (x${o.quantity})</div>
+            <div><b>ISI PAKET:</b> ${prodName} (x${o.quantity})</div>
             <div>STATUS: <b>${(o.status || 'PENDING').toUpperCase()}</b></div>
           </div>
           <div style="text-align:center; font-size:10px; font-style:italic;">${footer}</div>
