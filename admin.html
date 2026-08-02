@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: #FAF8F5; color: #121212; margin: 0; padding: 20px 15px; }
+    .container { max-width: 500px; margin: 0 auto; }
+    
+    .card {
+      background: #FFF;
+      border: 3px solid #121212;
+      border-radius: 12px;
+      box-shadow: 4px 4px 0px #121212;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      background: #FFDE59;
+      color: #121212;
+      border: 2px solid #121212;
+      border-radius: 8px;
+      box-shadow: 3px 3px 0px #121212;
+      padding: 10px 14px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+    }
+    
+    .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #121212; }
+    .btn-green { background: #7EDB84; }
+    .btn-wa { background: #25D366; color: white; }
+    .btn-white { background: #FFF; }
+    
+    .input-group { margin-bottom: 12px; }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #121212;
+      border-radius: 8px;
+      box-shadow: 2px 2px 0px #121212;
+      outline: none;
+      font-weight: 600;
+      background: #FFF;
+    }
+
+    .badge {
+      background: #FFDE59;
+      border: 1.5px solid #121212;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <span style="background: #121212; color: #FFF; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1px;">
+        ★ ADMIN CONTROL CENTER ★
+      </span>
+    </div>
+
+    <!-- Login Form -->
+    <div id="admin-login" class="card">
+      <h3 style="margin-top: 0; font-weight: 900;">🔒 Passkey Access</h3>
+      <div class="input-group">
+        <input type="password" id="admin-pass" placeholder="Passkey (default: admin123)">
+      </div>
+      <button class="btn" onclick="loginAdmin()">Unlock Dashboard</button>
+    </div>
+
+    <!-- Content Dashboard -->
+    <div id="admin-content" class="hidden">
+      <!-- Panel Stok -->
+      <div class="card">
+        <h3 style="margin-top: 0; font-size: 15px; font-weight: 900; border-bottom: 2px solid #121212; padding-bottom: 6px;">
+          📦 Kelola Produk & Stok
+        </h3>
+        <div id="admin-stock-list"></div>
+        
+        <hr style="border: 1px solid #121212; margin: 15px 0;">
+        <h4 style="margin: 0 0 10px 0; font-size: 13px;">+ Tambah Produk Baru</h4>
+        <input type="text" id="new-prod-name" placeholder="Nama Produk" style="margin-bottom:6px;">
+        <input type="number" id="new-prod-price" placeholder="Harga (Rp)" style="margin-bottom:6px;">
+        <input type="number" id="new-prod-stock" placeholder="Stok Awal" style="margin-bottom:6px;">
+        <button class="btn btn-green" onclick="addNewProduct()">Simpan Produk</button>
+      </div>
+
+      <!-- List Pesanan Masuk -->
+      <h3 style="font-size: 15px; font-weight: 900; margin-bottom: 12px;">📋 PESANAN MASUK</h3>
+      <div id="admin-orders-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://bygvlittjrnjidjnyuko.supabase.co"; 
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5Z3ZsaXR0anJuamlkam55dWtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NzA5MzQsImV4cCI6MjEwMTE0NjkzNH0.OOEexyrNwfIkmrMdMW5kP9JabOWDHIeNJaFn4LdV87g";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let productsData = [];
+    let ordersData = [];
+
+    function loginAdmin() {
+      const pass = document.getElementById('admin-pass').value;
+      if (pass === 'admin123') {
+        document.getElementById('admin-login').classList.add('hidden');
+        document.getElementById('admin-content').classList.remove('hidden');
+        fetchProducts();
+        fetchOrders();
+      } else {
+        alert('Password Salah!');
+      }
+    }
+
+    async function fetchProducts() {
+      const { data } = await supabase.from('products').select('*').order('name');
+      if (data) {
+        productsData = data;
+        renderAdminStock();
+      }
+    }
+
+    async function fetchOrders() {
+      const { data } = await supabase.from('orders').select('*, products(name)').order('created_at', { ascending: false });
+      if (data) {
+        ordersData = data;
+        renderAdminOrders();
+      }
+    }
+
+    function renderAdminStock() {
+      const container = document.getElementById('admin-stock-list');
+      container.innerHTML = productsData.length === 0 ? '<p style="font-size:12px; color:#666;">Belum ada produk.</p>' : '';
+      productsData.forEach(p => {
+        container.innerHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:13px;">
+            <span><b>${p.name}</b> (Rp${Number(p.price).toLocaleString('id-ID')})</span>
+            <div>
+              <input type="number" value="${p.stock}" onblur="updateStock('${p.id}', this.value)" style="width:60px; padding:4px;">
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    async function updateStock(id, newStock) {
+      await supabase.from('products').update({ stock: parseInt(newStock) || 0 }).eq('id', id);
+      fetchProducts();
+    }
+
+    async function addNewProduct() {
+      const name = document.getElementById('new-prod-name').value;
+      const price = parseInt(document.getElementById('new-prod-price').value) || 0;
+      const stock = parseInt(document.getElementById('new-prod-stock').value) || 0;
+
+      if (!name || price <= 0) {
+        alert('Isi nama dan harga dengan benar!');
+        return;
+      }
+
+      const { error } = await supabase.from('products').insert([{ name, price, stock }]);
+      if (!error) {
+        document.getElementById('new-prod-name').value = '';
+        document.getElementById('new-prod-price').value = '';
+        document.getElementById('new-prod-stock').value = '';
+        fetchProducts();
+        alert('Produk berhasil ditambahkan!');
+      } else {
+        alert('Gagal menambah produk: ' + error.message);
+      }
+    }
+
+    function renderAdminOrders() {
+      const container = document.getElementById('admin-orders-list');
+      container.innerHTML = ordersData.length === 0 ? '<p style="font-size:13px; color:#666;">Belum ada pesanan masuk.</p>' : '';
+      ordersData.forEach(o => {
+        container.innerHTML += `
+          <div class="card" style="padding:15px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <b>${o.customer_name}</b>
+              <span class="badge">${o.status}</span>
+            </div>
+            <div style="font-size:13px; color:#333;">WA: ${o.whatsapp}</div>
+            <div style="font-size:13px; color:#333;">Item: ${o.products?.name || 'Produk'} (x${o.quantity})</div>
+            <div style="font-size:14px; font-weight:bold; margin:6px 0;">Total: Rp${Number(o.total_price).toLocaleString('id-ID')}</div>
+            
+            <button class="btn btn-wa" onclick="sendWAInvoice('${o.id}', '${o.customer_name}', '${o.whatsapp}')">💬 1. Kirim Invoice WA</button>
+            <div style="display:flex; gap:8px;">
+              ${o.status !== 'paid' ? `<button class="btn btn-green" onclick="setPaid('${o.id}', '${o.product_id}', ${o.quantity})">✅ 2. Set Paid</button>` : ''}
+              <button class="btn btn-white" onclick="printLabel('${o.id}')">🖨️ 3. Cetak Label</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function sendWAInvoice(id, name, wa) {
+      const baseUrl = window.location.href.replace('admin.html', 'index.html');
+      const invoiceUrl = `${baseUrl}#invoice-${id}`;
+      const text = `Halo Kak ${name},\n\nPesanan Kakak sudah kami terima! Silakan cek invoice di link ini:\n\n${invoiceUrl}\n\nTerima kasih!`;
+      window.open(`https://wa.me/${wa.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    async function setPaid(orderId, productId, qty) {
+      await supabase.from('orders').update({ status: 'paid' }).eq('id', orderId);
+      
+      const prod = productsData.find(p => p.id === productId);
+      if (prod) {
+        const newStock = Math.max(0, prod.stock - qty);
+        await supabase.from('products').update({ stock: newStock }).eq('id', productId);
+      }
+
+      fetchProducts();
+      fetchOrders();
+    }
+
+    function printLabel(id) {
+      const o = ordersData.find(item => item.id === id);
+      if (!o) return;
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html>
+          <head><title>Label Pengiriman</title></head>
+          <body style="font-family:monospace; padding:20px;">
+            <div style="border:3px solid #000; padding:15px; width:300px;">
+              <h3 style="margin:0 0 10px 0; border-bottom:2px solid #000;">LABEL PENGIRIMAN 📦</h3>
+              <p><b>Penerima:</b> ${o.customer_name} (${o.whatsapp})</p>
+              <p><b>Alamat:</b><br>${o.address}<br><b>Kode Pos:</b> ${o.postal_code}</p>
+              <hr style="border:1px solid #000;">
+              <p><b>Isi Paket:</b> ${o.products?.name || 'Paket'} x${o.quantity}</p>
+            </div>
+            <script>window.print();<\/script>
+          </body>
+        </html>
+      `);
+      win.document.close();
+    }
+  </script>
+</body>
+</html>
