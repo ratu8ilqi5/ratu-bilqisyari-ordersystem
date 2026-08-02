@@ -1,372 +1,442 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Munchkin Munch</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    * { box-sizing: border-box; font-family: 'Courier New', Courier, monospace, -apple-system, sans-serif; }
-    body { background-color: #F3F0E6; color: #000000; margin: 0; padding: 20px 12px; }
-    .container { max-width: 480px; margin: 0 auto; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ratu Bilqis Syar'i - Sistem Kelola Stok 👑</title>
+    <!-- Google Fonts: Space Grotesk & VT323 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
     
-    /* Y2K HEADER */
-    .header { text-align: center; margin-bottom: 20px; background: #FFF; border: 2.5px solid #000; padding: 12px; box-shadow: 4px 4px 0px #000; border-radius: 12px; }
-    .header h2 { margin: 0; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; }
-    .header p { margin: 4px 0 0; font-size: 11px; font-weight: bold; color: #555; }
+    <style>
+        :root {
+            --bg-color: #2b2b2b;
+            --panel-bg: #383838;
+            --accent-color: #d4a373;
+            --accent-hover: #c39262;
+            --text-color: #f4f1de;
+            --border-pixel: #1a1a1a;
+            --danger-color: #e76f51;
+            --success-color: #2a9d8f;
+        }
 
-    /* MENU VERTIKAL Y2K NEO-BRUTALISM */
-    .nav-vertical { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-    .nav-btn {
-      width: 100%; background: #FFFFFF; border: 2.5px solid #000000;
-      padding: 12px 14px; border-radius: 10px; font-weight: 800; font-size: 13px;
-      color: #000000; text-align: left; display: flex; justify-content: space-between; align-items: center;
-      cursor: pointer; transition: all 0.1s ease; box-shadow: 3px 3px 0px #000000;
-    }
-    .nav-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #000000; }
-    .nav-btn.active {
-      background: #FFE600; /* Y2K Yellow */
-      border-color: #000000; box-shadow: 4px 4px 0px #000000;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Space Grotesk', sans-serif;
+        }
 
-    /* CARD GROUPING NEO-BRUTALIST */
-    .card-group {
-      background: #FFFFFF; border-radius: 12px; padding: 16px;
-      margin-bottom: 16px; border: 2.5px solid #000000; box-shadow: 4px 4px 0px #000000;
-    }
-    .card-title { font-size: 13px; font-weight: 900; margin-bottom: 12px; color: #000; text-transform: uppercase; letter-spacing: 0.5px; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
 
-    .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 10px; font-weight: 900; color: #000; margin-bottom: 4px; text-transform: uppercase; }
-    input, select {
-      width: 100%; padding: 10px; background: #FAF9F5; border: 2px solid #000;
-      border-radius: 8px; font-size: 12px; font-weight: 700; color: #000; outline: none;
-    }
-    input:focus, select:focus { background: #FFF; border-color: #000; box-shadow: 2px 2px 0px #000; }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--panel-bg);
+            border: 4px solid var(--border-pixel);
+            box-shadow: 6px 6px 0px var(--border-pixel);
+            padding: 20px;
+        }
 
-    /* BUTTONS NEO-BRUTALISM */
-    .btn { width: 100%; padding: 10px; border: 2px solid #000; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; margin-top: 6px; box-shadow: 2px 2px 0px #000; transition: 0.1s; }
-    .btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0px #000; }
-    .btn-dark { background: #000000; color: #FFF; }
-    .btn-green { background: #50E3C2; color: #000; } /* Y2K Mint/Green */
-    .btn-wa { background: #25D366; color: #000; }
-    .btn-light { background: #FAF9F5; color: #000; }
+        /* Header Style */
+        header {
+            text-align: center;
+            border-bottom: 4px dashed var(--border-pixel);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
 
-    /* BADGES */
-    .badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 900; border: 1.5px solid #000; text-transform: uppercase; }
-    .badge-pending { background: #FFD166; color: #000; }
-    .badge-paid { background: #06D6A0; color: #000; }
+        h1 {
+            font-family: 'VT323', monospace;
+            font-size: 3rem;
+            color: var(--accent-color);
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0px var(--border-pixel);
+        }
 
-    /* METRIC GRID */
-    .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .metric-box { background: #FAF9F5; border-radius: 8px; padding: 10px; text-align: center; border: 2px solid #000; }
-    .metric-val { font-size: 15px; font-weight: 900; color: #000; margin-top: 2px; }
-    .metric-lbl { font-size: 9px; font-weight: 900; color: #000; text-transform: uppercase; }
+        .subtitle {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-  </style>
+        /* Navigation Buttons */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pixel-btn {
+            font-family: 'VT323', monospace;
+            font-size: 1.4rem;
+            background-color: var(--accent-color);
+            color: var(--border-pixel);
+            border: 3px solid var(--border-pixel);
+            padding: 8px 16px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px var(--border-pixel);
+            transition: all 0.1s ease;
+        }
+
+        .pixel-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0px var(--border-pixel);
+        }
+
+        .pixel-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px var(--border-pixel);
+        }
+
+        .pixel-btn.active {
+            background-color: var(--text-color);
+            color: var(--border-pixel);
+        }
+
+        .pixel-btn.danger {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        .pixel-btn.success {
+            background-color: var(--success-color);
+            color: #fff;
+        }
+
+        /* Views Content */
+        .tab-view {
+            display: none;
+        }
+
+        .tab-view.active {
+            display: block;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-color);
+            border: 3px solid var(--border-pixel);
+            color: var(--text-color);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* Table Style */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 2px solid var(--border-pixel);
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--border-pixel);
+            color: var(--accent-color);
+            font-family: 'VT323', monospace;
+            font-size: 1.3rem;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btns button {
+            padding: 2px 8px;
+            font-size: 1.1rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: var(--bg-color);
+            border: 3px solid var(--border-pixel);
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .stat-card p {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="header">
-      <h2>Control Center 🛠️</h2>
-      <p>Dashboard Admin Munchkin Munch</p>
+    <div class="container">
+        <header>
+            <h1>RATU BILQIS SYAR'I 👑</h1>
+            <p class="subtitle">Sistem Manajemen & Kelola Stok Produksi 🧵✨</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="pixel-btn active" onclick="switchTab('dashboard')">📊 DASHBOARD</button>
+            <button class="pixel-btn" onclick="switchTab('kelola')">📦 KELOLA STOK</button>
+            <button class="pixel-btn" onclick="switchTab('tambah')">➕ TAMBAH PRODUK</button>
+        </div>
+
+        <!-- TAB 1: DASHBOARD -->
+        <div id="tab-dashboard" class="tab-view active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>TOTAL PRODUK 🛍️</h3>
+                    <p id="stat-total-produk">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>TOTAL STOK 🔢</h3>
+                    <p id="stat-total-stok">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>STOK MENIPIS ⚠️</h3>
+                    <p id="stat-stok-tipis">0</p>
+                </div>
+            </div>
+            <h2>Ringkasan Inventaris 📝</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>NAMA PRODUK 👗</th>
+                            <th>KATEGORI 🏷️</th>
+                            <th>STOK 📦</th>
+                            <th>STATUS 📌</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-table-body">
+                        <!-- Data diisi oleh JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2: KELOLA STOK -->
+        <div id="tab-kelola" class="tab-view">
+            <h2>Kelola Stok & Inventaris 📦</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>NAMA PRODUK 👗</th>
+                            <th>STOK 📦</th>
+                            <th>AKSI PRODUKSI ⚡</th>
+                            <th>HAPUS 🗑️</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kelola-table-body">
+                        <!-- Data diisi oleh JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 3: TAMBAH PRODUK -->
+        <div id="tab-tambah" class="tab-view">
+            <h2>Tambah Produk Baru ➕</h2>
+            <form id="form-tambah-produk" onsubmit="tambahProdukBaru(event)">
+                <div class="form-group">
+                    <label for="nama-produk">Nama Produk 👗:</label>
+                    <input type="text" id="nama-produk" placeholder="Contoh: Abaya Premium Mocca" required>
+                </div>
+                <div class="form-group">
+                    <label for="kategori-produk">Kategori 🏷️:</label>
+                    <select id="kategori-produk" required>
+                        <option value="Abaya">Abaya 👗</option>
+                        <option value="Khimar">Khimar 🧕</option>
+                        <option value="Gamis">Gamis 👘</option>
+                        <option value="Aksesoris">Aksesoris ✨</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="stok-awal">Stok Awal 🔢:</label>
+                    <input type="number" id="stok-awal" min="0" value="10" required>
+                </div>
+                <button type="submit" class="pixel-btn success">💾 SIMPAN PRODUK</button>
+            </form>
+        </div>
     </div>
 
-    <!-- SUB MENU VERTIKAL CLEAN Y2K -->
-    <div class="nav-vertical">
-      <button class="nav-btn active" onclick="switchTab('orders', this)"><span>📋 Pesanan Masuk</span> <span>➔</span></button>
-      <button class="nav-btn" onclick="switchTab('stock', this)"><span>📦 Kelola Stok Produk</span> <span>➔</span></button>
-      <button class="nav-btn" onclick="switchTab('rekap', this)"><span>📊 Rekap Penjualan</span> <span>➔</span></button>
-      <button class="nav-btn" onclick="switchTab('setting', this)"><span>⚙️ Setting Resi Thermal</span> <span>➔</span></button>
-    </div>
-
-    <!-- TAB 1: ORDERS -->
-    <div id="tab-orders" class="tab-content active">
-      <div class="card-group">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <div class="card-title" style="margin:0;">📋 Filter Orders</div>
-          <button class="btn btn-light" style="width:auto; padding:4px 10px; margin:0; font-size:10px;" onclick="fetchOrders()">🔄 Refresh</button>
-        </div>
-        <select id="filter-status" onchange="renderOrders()">
-          <option value="ALL">Semua Status</option>
-          <option value="pending">Pending (Menunggu Bayar)</option>
-          <option value="paid">Paid (Sudah Lunas)</option>
-        </select>
-      </div>
-      <div id="orders-list">Memuat pesanan...</div>
-    </div>
-
-    <!-- TAB 2: STOK -->
-    <div id="tab-stock" class="tab-content">
-      <div class="card-group">
-        <div class="card-title">➕ Tambah Produk Baru</div>
-        <div class="form-group"><label>Nama Produk</label><input type="text" id="new-name" placeholder="Contoh: Fudgy Brownies"></div>
-        <div class="form-group"><label>Harga (Rp)</label><input type="number" id="new-price" placeholder="65000"></div>
-        <div class="form-group"><label>Stok Awal</label><input type="number" id="new-stock" placeholder="10"></div>
-        <button class="btn btn-green" onclick="addProduct()">Simpan Produk</button>
-      </div>
-
-      <div class="card-group">
-        <div class="card-title">📦 Inventori Produk</div>
-        <div id="stock-list">Memuat produk...</div>
-      </div>
-    </div>
-
-    <!-- TAB 3: REKAP -->
-    <div id="tab-rekap" class="tab-content">
-      <div class="card-group">
-        <div class="card-title">📊 Performa Penjualan</div>
-        <div class="form-group">
-          <label>Periode</label>
-          <select id="rekap-filter" onchange="calculateRekap()">
-            <option value="all">Semua Waktu</option>
-            <option value="today">Hari Ini</option>
-            <option value="week">7 Hari Terakhir</option>
-            <option value="month">30 Hari Terakhir</option>
-          </select>
-        </div>
-        <div class="metric-grid" style="margin-top:10px;">
-          <div class="metric-box"><div class="metric-lbl">Total Omset</div><div class="metric-val" id="m-omset">Rp0</div></div>
-          <div class="metric-box"><div class="metric-lbl">Pesanan Lunas</div><div class="metric-val" id="m-orders">0</div></div>
-        </div>
-        <div class="metric-grid" style="margin-top:8px;">
-          <div class="metric-box"><div class="metric-lbl">Item Terjual</div><div class="metric-val" id="m-items">0 pcs</div></div>
-          <div class="metric-box"><div class="metric-lbl">Pending Order</div><div class="metric-val" id="m-pending">0</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 4: SETTING -->
-    <div id="tab-setting" class="tab-content">
-      <div class="card-group">
-        <div class="card-title">🖨️ Thermal Printer Layout</div>
-        <div class="form-group">
-          <label>Ukuran Kertas</label>
-          <select id="cfg-paper">
-            <option value="80mm">80mm x 100mm (Standar Resi)</option>
-            <option value="58mm">58mm (Struk Mini)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Ukuran Font Alamat</label>
-          <select id="cfg-font">
-            <option value="normal">Standar Rapi</option>
-            <option value="large">Besar Jelas (Kurir Friendly)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="card-group">
-        <div class="card-title">🏪 Identitas Pengirim</div>
-        <div class="form-group"><label>Nama Toko</label><input type="text" id="cfg-sender" value="Munchkin Munch"></div>
-        <div class="form-group"><label>No. WA Toko</label><input type="text" id="cfg-phone" placeholder="08xxxxxxxxxx"></div>
-        <div class="form-group"><label>Pesan Footer Resi</label><input type="text" id="cfg-footer" value="Terima kasih telah berbelanja! 🍪"></div>
-        <button class="btn btn-green" onclick="saveSettings()">💾 Simpan Layout</button>
-      </div>
-    </div>
-  </div>
     <script>
-    const SUPABASE_URL = "https://bygvlittjrnjidjnyuko.supabase.co"; 
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5Z3ZsaXR0anJuamlkam55dWtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NzA5MzQsImV4cCI6MjEwMTE0NjkzNH0.OOEexyrNwfIkmrMdMW5kP9JabOWDHIeNJaFn4LdV87g";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Data Stok Bawaan (Default Data)
+        let dataStok = [
+            { id: 1, nama: "Abaya Classic Black", kategori: "Abaya", stok: 15 },
+            { id: 2, nama: "Khimar Soft Pad Caramel", kategori: "Khimar", stok: 8 },
+            { id: 3, nama: "Gamis Terra Cotta", kategori: "Gamis", stok: 3 }
+        ];
 
-    let productsData = [], ordersData = [];
+        // Fungsi Navigasi Tab
+        function switchTab(tabName) {
+            // Sembunyikan semua konten tab
+            const allTabs = document.querySelectorAll('.tab-view');
+            allTabs.forEach(tab => tab.classList.remove('active'));
 
-    window.onload = () => {
-      loadSettings();
-      fetchProducts();
-      fetchOrders();
-    };
+            // Hapus status aktif dari semua tombol navigasi
+            const allBtns = document.querySelectorAll('.nav-tabs .pixel-btn');
+            allBtns.forEach(btn => btn.classList.remove('active'));
 
-    function switchTab(tab, btn) {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('tab-' + tab).classList.add('active');
-      if(tab === 'rekap') calculateRekap();
-    }
+            // Tampilkan tab yang dipilih
+            const selectedTab = document.getElementById('tab-' + tabName);
+            if(selectedTab) {
+                selectedTab.classList.add('active');
+            }
 
-    function loadSettings() {
-      document.getElementById('cfg-paper').value = localStorage.getItem('cfg_paper') || '80mm';
-      document.getElementById('cfg-font').value = localStorage.getItem('cfg_font') || 'normal';
-      document.getElementById('cfg-sender').value = localStorage.getItem('cfg_sender') || 'Munchkin Munch';
-      document.getElementById('cfg-phone').value = localStorage.getItem('cfg_phone') || '';
-      document.getElementById('cfg-footer').value = localStorage.getItem('cfg_footer') || 'Terima kasih telah berbelanja! 🍪';
-    }
+            // Aktifkan tombol yang diklik
+            event.currentTarget.classList.add('active');
 
-    function saveSettings() {
-      localStorage.setItem('cfg_paper', document.getElementById('cfg-paper').value);
-      localStorage.setItem('cfg_font', document.getElementById('cfg-font').value);
-      localStorage.setItem('cfg_sender', document.getElementById('cfg-sender').value);
-      localStorage.setItem('cfg_phone', document.getElementById('cfg-phone').value);
-      localStorage.setItem('cfg_footer', document.getElementById('cfg-footer').value);
-      alert('Settingan Thermal Berhasil Disimpan!');
-    }
+            // Refresh Tampilan Data
+            renderApp();
+        }
 
-    async function fetchProducts() {
-      const { data, error } = await supabase.from('products').select('*').order('name');
-      if (!error) {
-        productsData = data || [];
-        renderStock();
-      }
-    }
+        // Fungsi Update / Render Seluruh Tampilan
+        function renderApp() {
+            renderDashboard();
+            renderKelolaStok();
+        }
 
-    async function fetchOrders() {
-      const { data, error } = await supabase.from('orders').select('*, products(name)').order('created_at', { ascending: false });
-      if (!error) {
-        ordersData = data || [];
-        renderOrders();
-        calculateRekap();
-      }
-    }
+        // Render Dashboard & Statistik
+        function renderDashboard() {
+            const tbody = document.getElementById('dashboard-table-body');
+            tbody.innerHTML = '';
 
-    function renderStock() {
-      const container = document.getElementById('stock-list');
-      container.innerHTML = productsData.length ? '' : '<p style="font-size:11px; color:#555;">Belum ada produk.</p>';
-      productsData.forEach(p => {
-        container.innerHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1.5px dashed #000; font-size:12px;">
-            <div><b>${p.name}</b><br><small style="color:#555">Rp${Number(p.price).toLocaleString('id-ID')}</small></div>
-            <div style="display:flex; align-items:center; gap:6px;">
-              <small style="font-weight:900;">STOK:</small>
-              <input type="number" value="${p.stock}" onblur="updateStock('${p.id}', this.value)" style="width:55px; padding:4px; text-align:center; border:2px solid #000; border-radius:6px; font-weight:bold;">
-            </div>
-          </div>`;
-      });
-    }
+            let totalStok = 0;
+            let stokTipis = 0;
 
-    async function updateStock(id, newStock) {
-      await supabase.from('products').update({ stock: parseInt(newStock) || 0 }).eq('id', id);
-      fetchProducts();
-    }
+            dataStok.forEach(item => {
+                totalStok += item.stok;
+                if(item.stok < 5) stokTipis++;
 
-    async function addProduct() {
-      const name = document.getElementById('new-name').value;
-      const price = parseInt(document.getElementById('new-price').value) || 0;
-      const stock = parseInt(document.getElementById('new-stock').value) || 0;
-      if (!name || price <= 0) return alert('Isi nama & harga produk!');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${item.nama}</b></td>
+                    <td>${item.kategori}</td>
+                    <td>${item.stok} Pcs</td>
+                    <td>${item.stok < 5 ? '🚨 Stok Menipis' : '✅ Aman'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
 
-      await supabase.from('products').insert([{ name, price, stock }]);
-      document.getElementById('new-name').value = '';
-      document.getElementById('new-price').value = '';
-      document.getElementById('new-stock').value = '';
-      fetchProducts();
-      alert('Produk Berhasil Ditambah!');
-    }
+            // Update Statistik Card
+            document.getElementById('stat-total-produk').innerText = dataStok.length;
+            document.getElementById('stat-total-stok').innerText = totalStok;
+            document.getElementById('stat-stok-tipis').innerText = stokTipis;
+        }
 
-    function renderOrders() {
-      const container = document.getElementById('orders-list');
-      const filter = document.getElementById('filter-status').value;
-      const list = filter === 'ALL' ? ordersData : ordersData.filter(o => o.status === filter);
+        // Render Tabel Kelola Stok
+        function renderKelolaStok() {
+            const tbody = document.getElementById('kelola-table-body');
+            tbody.innerHTML = '';
 
-      container.innerHTML = list.length ? '' : '<p style="font-size:11px; color:#555; text-align:center; padding:15px;">Tidak ada pesanan.</p>';
+            dataStok.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${item.nama}</b></td>
+                    <td>${item.stok} Pcs</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="pixel-btn" onclick="ubahStok(${item.id}, -1)">- ➖</button>
+                            <button class="pixel-btn success" onclick="ubahStok(${item.id}, 1)">+ ➕</button>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="pixel-btn danger" onclick="hapusProduk(${item.id})">🗑️ Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-      list.forEach(o => {
-        const isPaid = o.status === 'paid';
-        const dateStr = new Date(o.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-        const prodName = o.products?.name || 'Produk Munchkin';
+        // Fungsi Tambah / Kurang Stok
+        function ubahStok(id, jumlah) {
+            const produk = dataStok.find(p => p.id === id);
+            if (produk) {
+                if (produk.stok + jumlah < 0) {
+                    alert("Stok tidak boleh kurang dari 0! ❌");
+                    return;
+                }
+                produk.stok += jumlah;
+                renderApp();
+            }
+        }
 
-        container.innerHTML += `
-          <div class="card-group" style="padding:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <b>${o.customer_name}</b>
-              <span class="badge ${isPaid ? 'badge-paid' : 'badge-pending'}">${o.status}</span>
-            </div>
-            <div style="font-size:11px; color:#555; margin:4px 0 8px; font-weight:bold;">📅 ${dateStr} • 📱 WA: ${o.whatsapp}</div>
-            <div style="background:#FAF9F5; border-radius:8px; padding:8px; font-size:12px; border:2px solid #000; margin-bottom:8px;">
-              <div>📦 <b>${prodName}</b> (x${o.quantity})</div>
-              <div>📍 ${o.address} (${o.postal_code || '-'})</div>
-              <div style="font-weight:900; margin-top:4px; color:#000;">Total: Rp${Number(o.total_price).toLocaleString('id-ID')}</div>
-            </div>
-            <button class="btn btn-wa" onclick="sendWA('${o.id}', '${o.customer_name}', '${o.whatsapp}')">💬 1. Kirim Invoice WA</button>
-            <div style="display:flex; gap:6px;">
-              ${!isPaid ? `<button class="btn btn-green" onclick="setPaid('${o.id}', '${o.product_id}', ${o.quantity})">✅ 2. Set Paid</button>` : ''}
-              <button class="btn btn-light" onclick="printLabel('${o.id}')">🖨️ Print Label</button>
-            </div>
-          </div>`;
-      });
-    }
+        // Fungsi Tambah Produk Baru
+        function tambahProdukBaru(e) {
+            e.preventDefault();
+            const nama = document.getElementById('nama-produk').value;
+            const kategori = document.getElementById('kategori-produk').value;
+            const stok = parseInt(document.getElementById('stok-awal').value);
 
-    function sendWA(id, name, wa) {
-      const invoiceUrl = `${window.location.href.replace('admin.html', 'index.html')}#invoice-${id}`;
-      const text = `Halo Kak ${name},\n\nPesanan Kakak sudah kami terima! Silakan cek invoice di link ini:\n\n${invoiceUrl}\n\nTerima kasih!`;
-      window.open(`https://wa.me/${wa.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
-    }
+            const produkBaru = {
+                id: Date.now(),
+                nama: nama,
+                kategori: kategori,
+                stok: stok
+            };
 
-    async function setPaid(orderId, productId, qty) {
-      await supabase.from('orders').update({ status: 'paid' }).eq('id', orderId);
-      const prod = productsData.find(p => p.id === productId);
-      if (prod) {
-        await supabase.from('products').update({ stock: Math.max(0, prod.stock - qty) }).eq('id', productId);
-      }
-      await fetchProducts();
-      await fetchOrders();
-    }
+            dataStok.push(produkBaru);
+            document.getElementById('form-tambah-produk').reset();
+            
+            alert("Produk berhasil ditambahkan! 🎉");
+            switchTab('kelola'); // Langsung beralih ke halaman kelola stok
+        }
 
-    function printLabel(id) {
-      const o = ordersData.find(i => i.id === id);
-      if (!o) return;
+        // Fungsi Hapus Produk
+        function hapusProduk(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus produk ini? ❓")) {
+                dataStok = dataStok.filter(p => p.id !== id);
+                renderApp();
+            }
+        }
 
-      const is58 = (localStorage.getItem('cfg_paper') || '80mm') === '58mm';
-      const isLarge = (localStorage.getItem('cfg_font') || 'normal') === 'large';
-      const sender = localStorage.getItem('cfg_sender') || 'Munchkin Munch';
-      const phone = localStorage.getItem('cfg_phone') || '';
-      const footer = localStorage.getItem('cfg_footer') || 'Terima kasih telah berbelanja! 🍪';
-      const prodName = o.products?.name || 'Produk Munchkin';
-
-      const win = window.open('', '_blank');
-      win.document.write(`
-        <html><head><title>Label - ${o.customer_name}</title>
-        <style>
-          @page { margin: 0; }
-          body { font-family: monospace; width: ${is58 ? '54mm' : '76mm'}; margin: 0 auto; padding: 6px; font-size: ${isLarge ? '13px' : '11px'}; line-height: 1.2; }
-          .box { border: 2px solid #000; padding: 6px; border-radius: 4px; }
-          .header { text-align: center; border-bottom: 1.5px dashed #000; padding-bottom: 4px; margin-bottom: 6px; font-weight: bold; }
-          .sec { border-bottom: 1.5px dashed #000; padding-bottom: 4px; margin-bottom: 6px; }
-          .addr { font-size: ${isLarge ? '14px' : '12px'}; font-weight: bold; margin-top: 2px; }
-        </style></head><body>
-        <div class="box">
-          <div class="header">${sender}<br><small>PENGIRIM: ${sender} ${phone ? '('+phone+')' : ''}</small></div>
-          <div class="sec">
-            <small>PENERIMA:</small>
-            <div style="font-size:13px; font-weight:bold;">${o.customer_name}</div>
-            <div>WA: ${o.whatsapp}</div>
-            <div class="addr">${o.address}</div>
-            <div>Kode Pos: ${o.postal_code || '-'}</div>
-          </div>
-          <div class="sec">
-            <div><b>ISI PAKET:</b> ${prodName} (x${o.quantity})</div>
-            <div>STATUS: <b>${(o.status || 'PENDING').toUpperCase()}</b></div>
-          </div>
-          <div style="text-align:center; font-size:10px; font-style:italic;">${footer}</div>
-        </div>
-        <script>window.onload = () => { window.print(); setTimeout(() => window.close(), 500); };<\/script>
-        </body></html>`);
-      win.document.close();
-    }
-
-    function calculateRekap() {
-      const filter = document.getElementById('rekap-filter').value;
-      const now = new Date();
-      let list = ordersData;
-
-      if (filter === 'today') list = ordersData.filter(o => new Date(o.created_at).toDateString() === now.toDateString());
-      else if (filter === 'week') list = ordersData.filter(o => new Date(o.created_at) >= new Date(now.getTime() - 7*24*60*60*1000));
-      else if (filter === 'month') list = ordersData.filter(o => new Date(o.created_at) >= new Date(now.getTime() - 30*24*60*60*1000));
-
-      const paid = list.filter(o => o.status === 'paid');
-      const pending = list.filter(o => o.status === 'pending');
-      const omset = paid.reduce((s, o) => s + Number(o.total_price || 0), 0);
-      const items = paid.reduce((s, o) => s + Number(o.quantity || 0), 0);
-
-      document.getElementById('m-omset').innerText = `Rp${omset.toLocaleString('id-ID')}`;
-      document.getElementById('m-orders').innerText = paid.length;
-      document.getElementById('m-items').innerText = `${items} pcs`;
-      document.getElementById('m-pending').innerText = pending.length;
-    }
-  </script>
+        // Jalankan saat pertama kali dibuka
+        window.onload = function() {
+            renderApp();
+        };
+    </script>
 </body>
 </html>
