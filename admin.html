@@ -3,288 +3,228 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Control Center</title>
+  <title>Admin Dashboard - Munchkin Munch</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: #FAF8F5; color: #121212; margin: 0; padding: 15px 10px; }
+    body { background-color: #F8FAFC; color: #0F172A; margin: 0; padding: 20px 12px; }
     .container { max-width: 500px; margin: 0 auto; }
     
-    .header { text-align: center; margin-bottom: 15px; }
-    .header-badge {
-      background: #121212; color: #FFF; padding: 4px 12px;
-      border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1px;
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h2 { margin: 0; font-size: 20px; font-weight: 800; }
+    .header p { margin: 4px 0 0; font-size: 13px; color: #64748B; }
+
+    /* MENU VERTIKAL */
+    .nav-vertical { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .nav-btn {
+      width: 100%; background: #FFFFFF; border: 1.5px solid #E2E8F0;
+      padding: 12px 16px; border-radius: 12px; font-weight: 700; font-size: 13px;
+      color: #475569; text-align: left; display: flex; justify-content: space-between;
+      cursor: pointer; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .nav-btn.active {
+      background: #0F172A; color: #FFFFFF; border-color: #0F172A;
+      box-shadow: 0 4px 12px rgba(15,23,42,0.15);
     }
 
-    .tab-navigation {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap: 4px;
-      margin-bottom: 15px;
+    /* CARD GROUPING UXCEL STYLE */
+    .card-group {
+      background: #FFFFFF; border-radius: 16px; padding: 18px;
+      margin-bottom: 16px; border: 1px solid #E2E8F0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
+    .card-title { font-size: 14px; font-weight: 800; margin-bottom: 12px; color: #0F172A; }
 
-    .tab-btn {
-      background: #FFF; color: #121212; border: 2px solid #121212;
-      border-radius: 8px; padding: 10px 2px; font-size: 10px;
-      font-weight: 800; text-align: center; cursor: pointer;
-      box-shadow: 2px 2px 0px #121212; transition: all 0.1s ease;
-    }
-
-    .tab-btn.active { background: #FFDE59; transform: translate(2px, 2px); box-shadow: 0px 0px 0px #121212; }
-
-    .card {
-      background: #FFF; border: 2.5px solid #121212;
-      border-radius: 12px; box-shadow: 3px 3px 0px #121212;
-      padding: 16px; margin-bottom: 15px;
-    }
-
-    .btn {
-      background: #FFDE59; color: #121212; border: 2px solid #121212;
-      border-radius: 8px; box-shadow: 2.5px 2.5px 0px #121212;
-      padding: 8px 12px; font-weight: bold; font-size: 12px;
-      cursor: pointer; width: 100%; margin-top: 6px;
-    }
-    .btn:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #121212; }
-    .btn-green { background: #7EDB84; }
-    .btn-wa { background: #25D366; color: white; }
-    .btn-white { background: #FFF; }
-
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px; text-transform: uppercase; }
     input, select {
-      width: 100%; padding: 8px; border: 2px solid #121212;
-      border-radius: 8px; box-shadow: 2px 2px 0px #121212;
-      outline: none; font-weight: 600; background: #FFF; font-size: 12px;
+      width: 100%; padding: 10px 12px; background: #F1F5F9; border: 1px solid transparent;
+      border-radius: 10px; font-size: 13px; font-weight: 600; color: #0F172A; outline: none;
     }
+    input:focus, select:focus { background: #FFF; border-color: #0F172A; }
 
-    .badge {
-      padding: 2px 6px; border-radius: 6px; font-size: 10px;
-      font-weight: 800; text-transform: uppercase; border: 1.5px solid #121212;
-    }
-    .badge-pending { background: #FFDE59; }
-    .badge-paid { background: #7EDB84; }
+    .btn { width: 100%; padding: 11px; border: none; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 6px; }
+    .btn-dark { background: #0F172A; color: #FFF; }
+    .btn-green { background: #10B981; color: #FFF; }
+    .btn-wa { background: #25D366; color: #FFF; }
+    .btn-light { background: #F1F5F9; color: #334155; }
 
-    .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-    .metric-box {
-      background: #FFF; border: 2px solid #121212; border-radius: 8px;
-      padding: 10px; text-align: center; box-shadow: 2px 2px 0px #121212;
-    }
-    .metric-val { font-size: 16px; font-weight: 900; margin-top: 4px; color: #121212; }
-    .metric-lbl { font-size: 10px; font-weight: 700; color: #666; text-transform: uppercase; }
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .badge-pending { background: #FEF08A; color: #854D0E; }
+    .badge-paid { background: #DCFCE7; color: #166534; }
+
+    .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .metric-box { background: #F8FAFC; border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #E2E8F0; }
+    .metric-val { font-size: 16px; font-weight: 800; color: #0F172A; margin-top: 2px; }
+    .metric-lbl { font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase; }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    .setting-label { font-size: 11px; font-weight: 800; margin-bottom: 4px; display: block; margin-top: 10px; }
   </style>
 </head>
 <body>
 
   <div class="container">
     <div class="header">
-      <span class="header-badge">★ ADMIN CONTROL CENTER ★</span>
+      <h2>Control Center 🛠️</h2>
+      <p>Dashboard Admin Munchkin Munch</p>
     </div>
 
-    <div class="tab-navigation">
-      <div class="tab-btn active" onclick="switchTab('orders')">📋 ORDERS</div>
-      <div class="tab-btn" onclick="switchTab('stock')">📦 STOK</div>
-      <div class="tab-btn" onclick="switchTab('rekap')">📊 REKAP</div>
-      <div class="tab-btn" onclick="switchTab('setting')">⚙️ SETTING</div>
+    <!-- SUB MENU VERTIKAL -->
+    <div class="nav-vertical">
+      <button class="nav-btn active" onclick="switchTab('orders', this)"><span>📋 Pesanan Masuk</span> <span>›</span></button>
+      <button class="nav-btn" onclick="switchTab('stock', this)"><span>📦 Kelola Stok Produk</span> <span>›</span></button>
+      <button class="nav-btn" onclick="switchTab('rekap', this)"><span>📊 Rekap Penjualan</span> <span>›</span></button>
+      <button class="nav-btn" onclick="switchTab('setting', this)"><span>⚙️ Setting Resi Thermal</span> <span>›</span></button>
     </div>
 
     <!-- TAB 1: ORDERS -->
     <div id="tab-orders" class="tab-content active">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h3 style="margin:0; font-size: 14px; font-weight: 900;">📋 PESANAN MASUK</h3>
-        <button class="btn btn-white" style="width:auto; padding:4px 8px; margin:0;" onclick="fetchOrders()">🔄 Refresh</button>
-      </div>
-
-      <div style="margin-bottom: 12px;">
-        <select id="filter-order-status" onchange="renderAdminOrders()">
-          <option value="ALL">Semua Status Order</option>
-          <option value="pending">Menunggu Pembayaran (Pending)</option>
-          <option value="paid">Sudah Dibayar (Paid)</option>
+      <div class="card-group">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div class="card-title" style="margin:0;">📋 Filter Orders</div>
+          <button class="btn btn-light" style="width:auto; padding:6px 12px; margin:0; font-size:11px;" onclick="fetchOrders()">🔄 Refresh</button>
+        </div>
+        <select id="filter-status" onchange="renderOrders()">
+          <option value="ALL">Semua Status</option>
+          <option value="pending">Pending (Menunggu Bayar)</option>
+          <option value="paid">Paid (Sudah Lunas)</option>
         </select>
       </div>
-
-      <div id="admin-orders-list">Memuat pesanan...</div>
+      <div id="orders-list">Memuat pesanan...</div>
     </div>
 
     <!-- TAB 2: STOK -->
     <div id="tab-stock" class="tab-content">
-      <div class="card">
-        <h3 style="margin-top:0; font-size: 14px; font-weight: 900; border-bottom: 2px solid #121212; padding-bottom: 6px;">+ Tambah Produk Baru</h3>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-          <input type="text" id="new-prod-name" placeholder="Nama Produk">
-          <input type="number" id="new-prod-price" placeholder="Harga (Rp)">
-          <input type="number" id="new-prod-stock" placeholder="Stok Awal">
-          <button class="btn btn-green" onclick="addNewProduct()">Simpan Produk</button>
-        </div>
+      <div class="card-group">
+        <div class="card-title">➕ Tambah Produk Baru</div>
+        <div class="form-group"><label>Nama Produk</label><input type="text" id="new-name" placeholder="Contoh: Fudgy Brownies"></div>
+        <div class="form-group"><label>Harga (Rp)</label><input type="number" id="new-price" placeholder="65000"></div>
+        <div class="form-group"><label>Stok Awal</label><input type="number" id="new-stock" placeholder="10"></div>
+        <button class="btn btn-green" onclick="addProduct()">Simpan Produk</button>
       </div>
 
-      <div class="card">
-        <h3 style="margin-top:0; font-size: 14px; font-weight: 900; border-bottom: 2px solid #121212; padding-bottom: 6px;">📦 Daftar & Update Stok</h3>
-        <div id="admin-stock-list">Memuat produk...</div>
+      <div class="card-group">
+        <div class="card-title">📦 Inventori Produk</div>
+        <div id="stock-list">Memuat produk...</div>
       </div>
     </div>
 
     <!-- TAB 3: REKAP -->
     <div id="tab-rekap" class="tab-content">
-      <div class="card">
-        <h3 style="margin-top:0; font-size: 14px; font-weight: 900; border-bottom: 2px solid #121212; padding-bottom: 6px;">📊 Rekap Penjualan</h3>
-        <div style="margin-bottom: 12px;">
+      <div class="card-group">
+        <div class="card-title">📊 Performa Penjualan</div>
+        <div class="form-group">
+          <label>Periode</label>
           <select id="rekap-filter" onchange="calculateRekap()">
             <option value="all">Semua Waktu</option>
             <option value="today">Hari Ini</option>
-            <option value="week">Minggu Ini (7 Hari)</option>
-            <option value="month">Bulan Ini (30 Hari)</option>
+            <option value="week">7 Hari Terakhir</option>
+            <option value="month">30 Hari Terakhir</option>
           </select>
         </div>
-
-        <div class="metric-grid">
-          <div class="metric-box"><div class="metric-lbl">Total Omset (Lunas)</div><div class="metric-val" id="metric-omset">Rp0</div></div>
-          <div class="metric-box"><div class="metric-lbl">Pesanan Lunas</div><div class="metric-val" id="metric-orders">0</div></div>
+        <div class="metric-grid" style="margin-top:10px;">
+          <div class="metric-box"><div class="metric-lbl">Total Omset</div><div class="metric-val" id="m-omset">Rp0</div></div>
+          <div class="metric-box"><div class="metric-lbl">Pesanan Lunas</div><div class="metric-val" id="m-orders">0</div></div>
         </div>
-        <div class="metric-grid">
-          <div class="metric-box"><div class="metric-lbl">Produk Terjual</div><div class="metric-val" id="metric-items">0 pcs</div></div>
-          <div class="metric-box"><div class="metric-lbl">Pending Order</div><div class="metric-val" id="metric-pending">0</div></div>
+        <div class="metric-grid" style="margin-top:8px;">
+          <div class="metric-box"><div class="metric-lbl">Item Terjual</div><div class="metric-val" id="m-items">0 pcs</div></div>
+          <div class="metric-box"><div class="metric-lbl">Pending Order</div><div class="metric-val" id="m-pending">0</div></div>
         </div>
       </div>
     </div>
 
     <!-- TAB 4: SETTING -->
     <div id="tab-setting" class="tab-content">
-      <div class="card">
-        <h3 style="margin-top:0; font-size: 14px; font-weight: 900; border-bottom: 2px solid #121212; padding-bottom: 6px;">🖨️ Setting Ukuran Cetak Resi</h3>
+      <div class="card-group">
+        <div class="card-title">🖨️ Thermal Printer Layout</div>
+        <div class="form-group">
+          <label>Ukuran Kertas</label>
+          <select id="cfg-paper">
+            <option value="80mm">80mm x 100mm (Standar Resi)</option>
+            <option value="58mm">58mm (Struk Mini)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Ukuran Font Alamat</label>
+          <select id="cfg-font">
+            <option value="normal">Standar Rapi</option>
+            <option value="large">Besar Jelas (Kurir Friendly)</option>
+          </select>
+        </div>
+      </div>
 
-        <span class="setting-label">Lebar Kertas Thermal Printer</span>
-        <select id="cfg-paper-size">
-          <option value="80mm">80mm x 100mm (Standar Resi Ekspedisi)</option>
-          <option value="58mm">58mm (Struk Mini Thermal)</option>
-        </select>
-
-        <span class="setting-label">Ukuran Tulisan Alamat (Font Size)</span>
-        <select id="cfg-font-scale">
-          <option value="normal">Standar (Rapi & Pas)</option>
-          <option value="large">Besar (Sangat Jelas Terbaca Kurir)</option>
-        </select>
-
-        <span class="setting-label">Nama Toko Pengirim</span>
-        <input type="text" id="cfg-sender-name" value="Munchkin Munch">
-
-        <span class="setting-label">No. WA Toko</span>
-        <input type="text" id="cfg-sender-phone" placeholder="08xxxxxxxxxx">
-
-        <span class="setting-label">Pesan Catatan Kaki (Footer)</span>
-        <input type="text" id="cfg-footer-note" value="Terima kasih telah berbelanja! 🍪✨">
-
-        <button class="btn btn-green" style="margin-top:15px;" onclick="saveSettings()">💾 Simpan Layout Thermal</button>
+      <div class="card-group">
+        <div class="card-title">🏪 Identitas Pengirim</div>
+        <div class="form-group"><label>Nama Toko</label><input type="text" id="cfg-sender" value="Munchkin Munch"></div>
+        <div class="form-group"><label>No. WA Toko</label><input type="text" id="cfg-phone" placeholder="08xxxxxxxxxx"></div>
+        <div class="form-group"><label>Pesan Footer Resi</label><input type="text" id="cfg-footer" value="Terima kasih telah berbelanja! 🍪"></div>
+        <button class="btn btn-green" onclick="saveSettings()">💾 Simpan Layout</button>
       </div>
     </div>
-
   </div>
     <script>
     const SUPABASE_URL = "https://bygvlittjrnjidjnyuko.supabase.co"; 
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5Z3ZsaXR0anJuamlkam55dWtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NzA5MzQsImV4cCI6MjEwMTE0NjkzNH0.OOEexyrNwfIkmrMdMW5kP9JabOWDHIeNJaFn4LdV87g";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let productsData = [];
-    let ordersData = [];
-
-    let thermalConfig = {
-      paperSize: localStorage.getItem('cfg_paper_size') || '80mm',
-      fontScale: localStorage.getItem('cfg_font_scale') || 'normal',
-      senderName: localStorage.getItem('cfg_sender_name') || 'Munchkin Munch',
-      senderPhone: localStorage.getItem('cfg_sender_phone') || '',
-      footerNote: localStorage.getItem('cfg_footer_note') || 'Terima kasih telah berbelanja! 🍪✨'
-    };
+    let productsData = [], ordersData = [];
 
     window.onload = () => {
-      loadSettingsToForm();
+      loadSettings();
       fetchProducts();
       fetchOrders();
     };
 
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-      if(tabName === 'orders') {
-        document.querySelectorAll('.tab-btn')[0].classList.add('active');
-        document.getElementById('tab-orders').classList.add('active');
-      } else if(tabName === 'stock') {
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
-        document.getElementById('tab-stock').classList.add('active');
-      } else if(tabName === 'rekap') {
-        document.querySelectorAll('.tab-btn')[2].classList.add('active');
-        document.getElementById('tab-rekap').classList.add('active');
-        calculateRekap();
-      } else if(tabName === 'setting') {
-        document.querySelectorAll('.tab-btn')[3].classList.add('active');
-        document.getElementById('tab-setting').classList.add('active');
-      }
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+      if(tab === 'rekap') calculateRekap();
     }
 
-    function loadSettingsToForm() {
-      document.getElementById('cfg-paper-size').value = thermalConfig.paperSize;
-      document.getElementById('cfg-font-scale').value = thermalConfig.fontScale;
-      document.getElementById('cfg-sender-name').value = thermalConfig.senderName;
-      document.getElementById('cfg-sender-phone').value = thermalConfig.senderPhone;
-      document.getElementById('cfg-footer-note').value = thermalConfig.footerNote;
+    function loadSettings() {
+      document.getElementById('cfg-paper').value = localStorage.getItem('cfg_paper') || '80mm';
+      document.getElementById('cfg-font').value = localStorage.getItem('cfg_font') || 'normal';
+      document.getElementById('cfg-sender').value = localStorage.getItem('cfg_sender') || 'Munchkin Munch';
+      document.getElementById('cfg-phone').value = localStorage.getItem('cfg_phone') || '';
+      document.getElementById('cfg-footer').value = localStorage.getItem('cfg_footer') || 'Terima kasih telah berbelanja! 🍪';
     }
 
     function saveSettings() {
-      thermalConfig.paperSize = document.getElementById('cfg-paper-size').value;
-      thermalConfig.fontScale = document.getElementById('cfg-font-scale').value;
-      thermalConfig.senderName = document.getElementById('cfg-sender-name').value;
-      thermalConfig.senderPhone = document.getElementById('cfg-sender-phone').value;
-      thermalConfig.footerNote = document.getElementById('cfg-footer-note').value;
-
-      localStorage.setItem('cfg_paper_size', thermalConfig.paperSize);
-      localStorage.setItem('cfg_font_scale', thermalConfig.fontScale);
-      localStorage.setItem('cfg_sender_name', thermalConfig.senderName);
-      localStorage.setItem('cfg_sender_phone', thermalConfig.senderPhone);
-      localStorage.setItem('cfg_footer_note', thermalConfig.footerNote);
-
-      alert('Settingan Ukuran Print Berhasil Disimpan!');
+      localStorage.setItem('cfg_paper', document.getElementById('cfg-paper').value);
+      localStorage.setItem('cfg_font', document.getElementById('cfg-font').value);
+      localStorage.setItem('cfg_sender', document.getElementById('cfg-sender').value);
+      localStorage.setItem('cfg_phone', document.getElementById('cfg-phone').value);
+      localStorage.setItem('cfg_footer', document.getElementById('cfg-footer').value);
+      alert('Settingan Thermal Berhasil Disimpan!');
     }
 
     async function fetchProducts() {
-      try {
-        const { data, error } = await supabase.from('products').select('*').order('name');
-        if (error) throw error;
-        productsData = data || [];
-        renderAdminStock();
-      } catch (err) {
-        document.getElementById('admin-stock-list').innerHTML = `<p style="color:red; font-size:12px;">Gagal memuat: ${err.message}</p>`;
-      }
+      const { data } = await supabase.from('products').select('*').order('name');
+      productsData = data || [];
+      renderStock();
     }
 
     async function fetchOrders() {
-      try {
-        const { data, error } = await supabase.from('orders').select('*, products(name)').order('created_at', { ascending: false });
-        if (error) throw error;
-        ordersData = data || [];
-        renderAdminOrders();
-        calculateRekap();
-      } catch (err) {
-        document.getElementById('admin-orders-list').innerHTML = `<p style="color:red; font-size:12px;">Gagal memuat: ${err.message}</p>`;
-      }
+      const { data } = await supabase.from('orders').select('*, products(name)').order('created_at', { ascending: false });
+      ordersData = data || [];
+      renderOrders();
+      calculateRekap();
     }
 
-    function renderAdminStock() {
-      const container = document.getElementById('admin-stock-list');
-      container.innerHTML = productsData.length === 0 ? '<p style="font-size:12px; color:#666;">Belum ada produk.</p>' : '';
+    function renderStock() {
+      const container = document.getElementById('stock-list');
+      container.innerHTML = productsData.length ? '' : '<p style="font-size:12px; color:#64748B;">Belum ada produk.</p>';
       productsData.forEach(p => {
         container.innerHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding-bottom:8px; border-bottom:1px dashed #ccc; font-size:12px;">
-            <div>
-              <b>${p.name}</b><br>
-              <span style="color:#555;">Rp${Number(p.price).toLocaleString('id-ID')}</span>
-            </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #F1F5F9; font-size:13px;">
+            <div><b>${p.name}</b><br><small style="color:#64748B">Rp${Number(p.price).toLocaleString('id-ID')}</small></div>
             <div style="display:flex; align-items:center; gap:6px;">
-              <span>Stok:</span>
+              <small style="font-weight:700;">STOK:</small>
               <input type="number" value="${p.stock}" onblur="updateStock('${p.id}', this.value)" style="width:55px; padding:4px; text-align:center;">
             </div>
-          </div>
-        `;
+          </div>`;
       });
     }
 
@@ -293,194 +233,125 @@
       fetchProducts();
     }
 
-    async function addNewProduct() {
-      const name = document.getElementById('new-prod-name').value;
-      const price = parseInt(document.getElementById('new-prod-price').value) || 0;
-      const stock = parseInt(document.getElementById('new-prod-stock').value) || 0;
+    async function addProduct() {
+      const name = document.getElementById('new-name').value;
+      const price = parseInt(document.getElementById('new-price').value) || 0;
+      const stock = parseInt(document.getElementById('new-stock').value) || 0;
+      if (!name || price <= 0) return alert('Isi nama & harga produk!');
 
-      if (!name || price <= 0) {
-        alert('Mohon isi nama dan harga produk!');
-        return;
-      }
-
-      const { error } = await supabase.from('products').insert([{ name, price, stock }]);
-      if (!error) {
-        document.getElementById('new-prod-name').value = '';
-        document.getElementById('new-prod-price').value = '';
-        document.getElementById('new-prod-stock').value = '';
-        fetchProducts();
-        alert('Produk berhasil ditambahkan!');
-      } else {
-        alert('Gagal menambah produk: ' + error.message);
-      }
+      await supabase.from('products').insert([{ name, price, stock }]);
+      document.getElementById('new-name').value = '';
+      document.getElementById('new-price').value = '';
+      document.getElementById('new-stock').value = '';
+      fetchProducts();
+      alert('Produk Berhasil Ditambah!');
     }
 
-    function renderAdminOrders() {
-      const container = document.getElementById('admin-orders-list');
-      const filter = document.getElementById('filter-order-status').value;
-      
-      let filtered = ordersData;
-      if (filter !== 'ALL') {
-        filtered = ordersData.filter(o => o.status === filter);
-      }
+    function renderOrders() {
+      const container = document.getElementById('orders-list');
+      const filter = document.getElementById('filter-status').value;
+      const list = filter === 'ALL' ? ordersData : ordersData.filter(o => o.status === filter);
 
-      container.innerHTML = filtered.length === 0 ? '<p style="font-size:12px; color:#666; text-align:center;">Tidak ada pesanan.</p>' : '';
-      
-      filtered.forEach(o => {
+      container.innerHTML = list.length ? '' : '<p style="font-size:12px; color:#64748B; text-align:center; padding:15px;">Tidak ada pesanan.</p>';
+
+      list.forEach(o => {
         const isPaid = o.status === 'paid';
-        const badgeClass = isPaid ? 'badge-paid' : 'badge-pending';
         const dateStr = new Date(o.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
         container.innerHTML += `
-          <div class="card" style="padding:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div class="card-group" style="padding:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
               <b>${o.customer_name}</b>
-              <span class="badge ${badgeClass}">${o.status}</span>
+              <span class="badge ${isPaid ? 'badge-paid' : 'badge-pending'}">${o.status}</span>
             </div>
-            <div style="font-size:11px; color:#666; margin-bottom:6px;">📅 ${dateStr}</div>
-            <div style="font-size:12px; color:#333;">📱 WA: ${o.whatsapp}</div>
-            <div style="font-size:12px; color:#333;">📦 Item: <b>${o.products?.name || 'Produk'}</b> (x${o.quantity})</div>
-            <div style="font-size:13px; font-weight:bold; margin:6px 0; color:#121212;">Total: Rp${Number(o.total_price).toLocaleString('id-ID')}</div>
-            
-            <button class="btn btn-wa" onclick="sendWAInvoice('${o.id}', '${o.customer_name}', '${o.whatsapp}')">💬 1. Kirim Invoice WA</button>
+            <div style="font-size:11px; color:#64748B; margin:4px 0 8px;">📅 ${dateStr} • 📱 WA: ${o.whatsapp}</div>
+            <div style="background:#F8FAFC; border-radius:8px; padding:8px; font-size:12px; border:1px solid #E2E8F0; margin-bottom:8px;">
+              <div>📦 <b>${o.products?.name || 'Produk'}</b> (x${o.quantity})</div>
+              <div>📍 ${o.address} (${o.postal_code || '-'})</div>
+              <div style="font-weight:800; margin-top:4px; color:#0F172A;">Total: Rp${Number(o.total_price).toLocaleString('id-ID')}</div>
+            </div>
+            <button class="btn btn-wa" onclick="sendWA('${o.id}', '${o.customer_name}', '${o.whatsapp}')">💬 1. Kirim Invoice WA</button>
             <div style="display:flex; gap:6px;">
               ${!isPaid ? `<button class="btn btn-green" onclick="setPaid('${o.id}', '${o.product_id}', ${o.quantity})">✅ 2. Set Paid</button>` : ''}
-              <button class="btn btn-white" onclick="printLabel('${o.id}')">🖨️ Print Label</button>
+              <button class="btn btn-light" onclick="printLabel('${o.id}')">🖨️ Print Label</button>
             </div>
-          </div>
-        `;
+          </div>`;
       });
     }
 
-    function sendWAInvoice(id, name, wa) {
-      const baseUrl = window.location.href.replace('admin.html', 'index.html');
-      const invoiceUrl = `${baseUrl}#invoice-${id}`;
+    function sendWA(id, name, wa) {
+      const invoiceUrl = `${window.location.href.replace('admin.html', 'index.html')}#invoice-${id}`;
       const text = `Halo Kak ${name},\n\nPesanan Kakak sudah kami terima! Silakan cek invoice di link ini:\n\n${invoiceUrl}\n\nTerima kasih!`;
       window.open(`https://wa.me/${wa.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
     }
 
     async function setPaid(orderId, productId, qty) {
       await supabase.from('orders').update({ status: 'paid' }).eq('id', orderId);
-      
       const prod = productsData.find(p => p.id === productId);
-      if (prod) {
-        const newStock = Math.max(0, prod.stock - qty);
-        await supabase.from('products').update({ stock: newStock }).eq('id', productId);
-      }
-
+      if (prod) await supabase.from('products').update({ stock: Math.max(0, prod.stock - qty) }).eq('id', productId);
       fetchProducts();
       fetchOrders();
     }
 
     function printLabel(id) {
-      const o = ordersData.find(item => item.id === id);
+      const o = ordersData.find(i => i.id === id);
       if (!o) return;
 
-      const is58 = thermalConfig.paperSize === '58mm';
-      const pWidth = is58 ? '54mm' : '76mm';
-      
-      let baseFontSize = '12px';
-      let addrFontSize = '13px';
-      if (thermalConfig.fontScale === 'large') {
-        baseFontSize = is58 ? '13px' : '14px';
-        addrFontSize = is58 ? '14px' : '16px';
-      } else {
-        baseFontSize = is58 ? '10px' : '12px';
-        addrFontSize = is58 ? '12px' : '14px';
-      }
+      const is58 = (localStorage.getItem('cfg_paper') || '80mm') === '58mm';
+      const isLarge = (localStorage.getItem('cfg_font') || 'normal') === 'large';
+      const sender = localStorage.getItem('cfg_sender') || 'Munchkin Munch';
+      const phone = localStorage.getItem('cfg_phone') || '';
+      const footer = localStorage.getItem('cfg_footer') || 'Terima kasih telah berbelanja! 🍪';
 
       const win = window.open('', '_blank');
       win.document.write(`
-        <html>
-          <head>
-            <title>Label Pengiriman - ${o.customer_name}</title>
-            <style>
-              @page { margin: 0; size: auto; }
-              body {
-                font-family: Arial, Helvetica, sans-serif;
-                width: ${pWidth};
-                margin: 0 auto;
-                padding: 8px 4px;
-                color: #000;
-                font-size: ${baseFontSize};
-                line-height: 1.3;
-              }
-              .border-box { border: 2px solid #000; padding: 6px; border-radius: 4px; }
-              .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 6px; margin-bottom: 6px; }
-              .section { border-bottom: 1px dashed #000; padding-bottom: 6px; margin-bottom: 6px; }
-              .bold { font-weight: bold; }
-              .title { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
-              .address-text { font-size: ${addrFontSize}; font-weight: bold; margin-top: 2px; }
-              .footer { text-align: center; font-size: 10px; margin-top: 8px; font-style: italic; }
-            </style>
-          </head>
-          <body>
-            <div class="border-box">
-              <div class="header">
-                <div class="title">${thermalConfig.senderName}</div>
-                <div>Pengirim: ${thermalConfig.senderName} ${thermalConfig.senderPhone ? '(' + thermalConfig.senderPhone + ')' : ''}</div>
-              </div>
-
-              <div class="section">
-                <div class="bold" style="font-size:10px; text-transform:uppercase; color:#333;">PENERIMA (PATEN):</div>
-                <div style="font-size:${addrFontSize}; font-weight:900;">${o.customer_name}</div>
-                <div><b>No. WA:</b> ${o.whatsapp}</div>
-                <div style="margin-top:4px;">
-                  <b>Alamat Lengkap:</b>
-                  <div class="address-text">${o.address}</div>
-                </div>
-                <div style="margin-top:2px;"><b>Kode Pos:</b> ${o.postal_code || '-'}</div>
-              </div>
-
-              <div class="section">
-                <div class="bold" style="font-size:10px; text-transform:uppercase; color:#333;">ISI PAKET:</div>
-                <div style="font-weight:bold;">• ${o.products?.name || 'Produk'} (x${o.quantity})</div>
-                <div>Pembayaran: <b>${(o.status || 'PENDING').toUpperCase()}</b></div>
-              </div>
-
-              <div class="footer">
-                ${thermalConfig.footerNote}
-              </div>
-            </div>
-
-            <script>
-              window.onload = () => {
-                window.print();
-                setTimeout(() => { window.close(); }, 500);
-              };
-            <\/script>
-          </body>
-        </html>
-      `);
+        <html><head><title>Label - ${o.customer_name}</title>
+        <style>
+          @page { margin: 0; }
+          body { font-family: sans-serif; width: ${is58 ? '54mm' : '76mm'}; margin: 0 auto; padding: 6px; font-size: ${isLarge ? '13px' : '11px'}; line-height: 1.2; }
+          .box { border: 2px solid #000; padding: 6px; border-radius: 4px; }
+          .header { text-align: center; border-bottom: 1px dashed #000; padding-bottom: 4px; margin-bottom: 6px; font-weight: bold; }
+          .sec { border-bottom: 1px dashed #000; padding-bottom: 4px; margin-bottom: 6px; }
+          .addr { font-size: ${isLarge ? '15px' : '13px'}; font-weight: bold; margin-top: 2px; }
+        </style></head><body>
+        <div class="box">
+          <div class="header">${sender}<br><small>PENGIRIM: ${sender} ${phone ? '('+phone+')' : ''}</small></div>
+          <div class="sec">
+            <small>PENERIMA:</small>
+            <div style="font-size:14px; font-weight:bold;">${o.customer_name}</div>
+            <div>WA: ${o.whatsapp}</div>
+            <div class="addr">${o.address}</div>
+            <div>Kode Pos: ${o.postal_code || '-'}</div>
+          </div>
+          <div class="sec">
+            <div><b>ISI PAKET:</b> ${o.products?.name || 'Produk'} (x${o.quantity})</div>
+            <div>STATUS: <b>${(o.status || 'PENDING').toUpperCase()}</b></div>
+          </div>
+          <div style="text-align:center; font-size:10px; font-style:italic;">${footer}</div>
+        </div>
+        <script>window.onload = () => { window.print(); setTimeout(() => window.close(), 500); };<\/script>
+        </body></html>`);
       win.document.close();
     }
 
     function calculateRekap() {
       const filter = document.getElementById('rekap-filter').value;
       const now = new Date();
-      
-      let filteredOrders = ordersData;
+      let list = ordersData;
 
-      if (filter === 'today') {
-        filteredOrders = ordersData.filter(o => new Date(o.created_at).toDateString() === now.toDateString());
-      } else if (filter === 'week') {
-        const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
-        filteredOrders = ordersData.filter(o => new Date(o.created_at) >= sevenDaysAgo);
-      } else if (filter === 'month') {
-        const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
-        filteredOrders = ordersData.filter(o => new Date(o.created_at) >= thirtyDaysAgo);
-      }
+      if (filter === 'today') list = ordersData.filter(o => new Date(o.created_at).toDateString() === now.toDateString());
+      else if (filter === 'week') list = ordersData.filter(o => new Date(o.created_at) >= new Date(now.getTime() - 7*24*60*60*1000));
+      else if (filter === 'month') list = ordersData.filter(o => new Date(o.created_at) >= new Date(now.getTime() - 30*24*60*60*1000));
 
-      const paidOrders = filteredOrders.filter(o => o.status === 'paid');
-      const pendingOrders = filteredOrders.filter(o => o.status === 'pending');
+      const paid = list.filter(o => o.status === 'paid');
+      const pending = list.filter(o => o.status === 'pending');
+      const omset = paid.reduce((s, o) => s + Number(o.total_price || 0), 0);
+      const items = paid.reduce((s, o) => s + Number(o.quantity || 0), 0);
 
-      const totalOmset = paidOrders.reduce((sum, o) => sum + Number(o.total_price || 0), 0);
-      const totalItems = paidOrders.reduce((sum, o) => sum + Number(o.quantity || 0), 0);
-
-      document.getElementById('metric-omset').innerText = `Rp${totalOmset.toLocaleString('id-ID')}`;
-      document.getElementById('metric-orders').innerText = paidOrders.length;
-      document.getElementById('metric-items').innerText = `${totalItems} pcs`;
-      document.getElementById('metric-pending').innerText = pendingOrders.length;
+      document.getElementById('m-omset').innerText = `Rp${omset.toLocaleString('id-ID')}`;
+      document.getElementById('m-orders').innerText = paid.length;
+      document.getElementById('m-items').innerText = `${items} pcs`;
+      document.getElementById('m-pending').innerText = pending.length;
     }
   </script>
 </body>
