@@ -59,8 +59,6 @@
       font-weight: 800;
       text-transform: uppercase;
     }
-    
-    .hidden { display: none; }
   </style>
 </head>
 <body>
@@ -72,23 +70,14 @@
       </span>
     </div>
 
-    <!-- Login Form -->
-    <div id="admin-login" class="card">
-      <h3 style="margin-top: 0; font-weight: 900;">🔒 Passkey Access</h3>
-      <div class="input-group">
-        <input type="password" id="admin-pass" placeholder="Passkey (default: admin123)">
-      </div>
-      <button class="btn" onclick="loginAdmin()">Unlock Dashboard</button>
-    </div>
-
-    <!-- Content Dashboard -->
-    <div id="admin-content" class="hidden">
+    <!-- Content Dashboard Direct Access -->
+    <div id="admin-content">
       <!-- Panel Stok -->
       <div class="card">
         <h3 style="margin-top: 0; font-size: 15px; font-weight: 900; border-bottom: 2px solid #121212; padding-bottom: 6px;">
           📦 Kelola Produk & Stok
         </h3>
-        <div id="admin-stock-list"></div>
+        <div id="admin-stock-list">Loading stok...</div>
         
         <hr style="border: 1px solid #121212; margin: 15px 0;">
         <h4 style="margin: 0 0 10px 0; font-size: 13px;">+ Tambah Produk Baru</h4>
@@ -100,7 +89,7 @@
 
       <!-- List Pesanan Masuk -->
       <h3 style="font-size: 15px; font-weight: 900; margin-bottom: 12px;">📋 PESANAN MASUK</h3>
-      <div id="admin-orders-list"></div>
+      <div id="admin-orders-list">Loading pesanan...</div>
     </div>
   </div>
 
@@ -112,31 +101,31 @@
     let productsData = [];
     let ordersData = [];
 
-    function loginAdmin() {
-      const pass = document.getElementById('admin-pass').value;
-      if (pass === 'admin123') {
-        document.getElementById('admin-login').classList.add('hidden');
-        document.getElementById('admin-content').classList.remove('hidden');
-        fetchProducts();
-        fetchOrders();
-      } else {
-        alert('Password Salah!');
-      }
-    }
+    // Langsung load data begitu halaman terbuka
+    window.onload = () => {
+      fetchProducts();
+      fetchOrders();
+    };
 
     async function fetchProducts() {
-      const { data } = await supabase.from('products').select('*').order('name');
-      if (data) {
-        productsData = data;
+      try {
+        const { data, error } = await supabase.from('products').select('*').order('name');
+        if (error) throw error;
+        productsData = data || [];
         renderAdminStock();
+      } catch (err) {
+        document.getElementById('admin-stock-list').innerHTML = `<p style="color:red; font-size:12px;">Gagal memuat produk: ${err.message}</p>`;
       }
     }
 
     async function fetchOrders() {
-      const { data } = await supabase.from('orders').select('*, products(name)').order('created_at', { ascending: false });
-      if (data) {
-        ordersData = data;
+      try {
+        const { data, error } = await supabase.from('orders').select('*, products(name)').order('created_at', { ascending: false });
+        if (error) throw error;
+        ordersData = data || [];
         renderAdminOrders();
+      } catch (err) {
+        document.getElementById('admin-orders-list').innerHTML = `<p style="color:red; font-size:12px;">Gagal memuat pesanan: ${err.message}</p>`;
       }
     }
 
