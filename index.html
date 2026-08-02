@@ -3,278 +3,187 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order System</title>
+  <title>Order - Munchkin Munch</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: #FAF8F5; color: #121212; margin: 0; padding: 20px 15px; }
-    .container { max-width: 500px; margin: 0 auto; }
-    
-    .card {
-      background: #FFF;
-      border: 3px solid #121212;
-      border-radius: 12px;
-      box-shadow: 4px 4px 0px #121212;
-      padding: 20px;
-      margin-bottom: 20px;
+    body { background-color: #F8FAFC; color: #0F172A; margin: 0; padding: 20px 12px; }
+    .container { max-width: 480px; margin: 0 auto; }
+
+    .brand-header { text-align: center; margin-bottom: 20px; }
+    .brand-header h1 { font-size: 22px; font-weight: 800; margin: 0; }
+    .brand-header p { font-size: 13px; color: #64748B; margin-top: 4px; }
+
+    /* CARD GROUPING UXCEL STYLE */
+    .card-group {
+      background: #FFFFFF; border-radius: 16px; padding: 18px;
+      margin-bottom: 14px; border: 1px solid #E2E8F0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
-    
-    .btn {
-      background: #FFDE59;
-      color: #121212;
-      border: 2px solid #121212;
-      border-radius: 8px;
-      box-shadow: 3px 3px 0px #121212;
-      padding: 12px 14px;
-      font-weight: bold;
-      font-size: 14px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 8px;
-    }
-    
-    .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #121212; }
-    .btn-white { background: #FFF; }
-    
-    .input-group { margin-bottom: 12px; }
-    label { font-size: 12px; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 4px; }
+    .card-title { font-size: 14px; font-weight: 800; color: #0F172A; margin-bottom: 14px; }
+
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px; text-transform: uppercase; }
     input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 2px solid #121212;
-      border-radius: 8px;
-      box-shadow: 2px 2px 0px #121212;
-      outline: none;
-      font-weight: 600;
-      background: #FFF;
+      width: 100%; padding: 11px 12px; background: #F1F5F9; border: 1.5px solid transparent;
+      border-radius: 10px; font-size: 13px; font-weight: 600; color: #0F172A; outline: none;
     }
-    
-    .badge {
-      background: #FFDE59;
-      border: 1.5px solid #121212;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
+    input:focus, select:focus, textarea:focus { background: #FFFFFF; border-color: #0F172A; }
+
+    .btn-submit {
+      width: 100%; padding: 14px; background: #0F172A; color: #FFFFFF;
+      border: none; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(15,23,42,0.15); transition: 0.2s;
     }
-    
-    .hidden { display: none; }
+    .btn-submit:active { transform: scale(0.98); }
+
+    #invoice-box { display: none; }
+    .invoice-card { background: #FFFFFF; border-radius: 16px; padding: 20px; border: 1px solid #E2E8F0; text-align: center; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <div style="text-align: center; margin-bottom: 20px;">
-      <span style="background: #121212; color: #FFF; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1px;">
-        ★ QUICK ORDER SYSTEM ★
-      </span>
+    <div class="brand-header">
+      <h1>Munchkin Munch 🍪</h1>
+      <p>Form Pemesanan Online</p>
     </div>
 
-    <!-- TAMPILAN FORM ORDER CUSTOMER -->
-    <div id="view-order" class="card">
-      <h2 style="font-size: 20px; font-weight: 900; margin-top: 0; border-bottom: 2px solid #121212; padding-bottom: 8px;">
-        Form Pemesanan 🛍️
-      </h2>
+    <!-- FORM ORDER CUSTOMER -->
+    <form id="order-form" onsubmit="submitOrder(event)">
       
-      <div id="order-success" class="hidden" style="background: #7EDB84; border: 2px solid #121212; padding: 15px; border-radius: 8px; box-shadow: 3px 3px 0px #121212; margin-bottom: 15px;">
-        <h3 style="margin: 0 0 8px 0; font-weight: 900;">🎉 Order Berhasil!</h3>
-        <p style="margin: 0 0 12px 0; font-size: 14px;">Pesananmu telah tersimpan. Silakan tunggu konfirmasi admin.</p>
-        <button class="btn btn-white" onclick="resetOrderForm()">+ Pesan Lagi</button>
-      </div>
-
-      <form id="order-form" onsubmit="handleOrderSubmit(event)">
-        <div class="input-group">
-          <label>Nama Lengkap</label>
-          <input type="text" id="cust-name" required placeholder="misal: Budi Santoso">
-        </div>
-
-        <div class="input-group">
-          <label>No. WhatsApp Active</label>
-          <input type="text" id="cust-wa" required placeholder="misal: 08123456789">
-        </div>
-
-        <div class="input-group">
-          <label>Pilih Produk (Stok Real-time)</label>
-          <select id="cust-product" required onchange="calculateTotal()"></select>
-        </div>
-
-        <div class="input-group">
-          <label>Jumlah (Qty)</label>
-          <input type="number" id="cust-qty" value="1" min="1" required oninput="calculateTotal()">
-        </div>
-
-        <div style="background: #E0F2FE; border: 2px solid #121212; padding: 10px; border-radius: 8px; margin-bottom: 12px;">
-          <span style="font-size: 11px; font-weight: 800;">TOTAL ESTIMASI:</span>
-          <div style="font-size: 18px; font-weight: 900;" id="total-price-display">Rp0</div>
-        </div>
-
-        <div class="input-group">
-          <label>Alamat Lengkap Pengiriman</label>
-          <textarea id="cust-address" rows="3" required placeholder="Jalan, No Rumah, RT/RW, Kec/Kab"></textarea>
-        </div>
-
-        <div class="input-group">
-          <label>Kode Pos</label>
-          <input type="text" id="cust-postal" required placeholder="misal: 12340">
-        </div>
-
-        <div class="input-group">
-          <label>Opsi Pembayaran</label>
-          <select id="cust-payment">
-            <option value="BANK">Transfer Bank</option>
-            <option value="QRIS">QRIS</option>
+      <!-- GROUP 1: ITEM INFO -->
+      <div class="card-group">
+        <div class="card-title">📦 Pilih Pesanan</div>
+        <div class="form-group">
+          <label>Pilih Produk</label>
+          <select id="cust-product" required onchange="updateTotal()">
+            <option value="">-- Memuat Produk --</option>
           </select>
         </div>
-
-        <button type="submit" id="submit-btn" class="btn">🚀 Submit Order</button>
-      </form>
-    </div>
-
-    <!-- TAMPILAN INVOICE CUSTOMER -->
-    <div id="view-invoice" class="card hidden">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <h2 style="font-size: 18px; font-weight: 900; margin: 0;">INVOICE</h2>
-        <span class="badge" id="inv-status">PENDING</span>
-      </div>
-      <p style="margin: 4px 0; font-size: 14px;"><b>Penerima:</b> <span id="inv-name"></span></p>
-      <p style="margin: 4px 0; font-size: 14px;"><b>Pesanan:</b> <span id="inv-item"></span></p>
-      
-      <div style="background: #FAF8F5; border: 2px solid #121212; padding: 12px; border-radius: 8px; margin: 14px 0;">
-        <span style="font-size: 11px; font-weight: 800; color: #666;">TOTAL TAGIHAN:</span>
-        <div style="font-size: 20px; font-weight: 900;" id="inv-total">Rp0</div>
+        <div class="form-group">
+          <label>Jumlah (Qty)</label>
+          <input type="number" id="cust-qty" value="1" min="1" required onchange="updateTotal()">
+        </div>
+        <div style="background:#F8FAFC; border-radius:10px; padding:10px; text-align:right; border:1px solid #E2E8F0; margin-top:10px;">
+          <span style="font-size:10px; color:#64748B; font-weight:700;">TOTAL BAYAR:</span>
+          <div style="font-size:18px; font-weight:800; color:#0F172A;" id="cust-total">Rp0</div>
+        </div>
       </div>
 
-      <h3 style="font-size: 13px; font-weight: 800; margin-bottom: 8px;">INSTRUKSI PEMBAYARAN:</h3>
-      <div style="background: #E0F2FE; border: 2px solid #121212; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px;">
-        BCA 1234567890 a/n Nama Toko
+      <!-- GROUP 2: PERSONAL INFO -->
+      <div class="card-group">
+        <div class="card-title">👤 Data Pemesan</div>
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="cust-name" placeholder="Masukkan nama kamu" required>
+        </div>
+        <div class="form-group">
+          <label>Nomor WhatsApp</label>
+          <input type="tel" id="cust-wa" placeholder="08xxxxxxxxxx" required>
+        </div>
       </div>
-      <p style="font-size: 12px; color: #666; text-align: center; margin-top: 15px;">*Konfirmasi bukti transfer ke WhatsApp admin setelah bayar.</p>
+
+      <!-- GROUP 3: DELIVERY INFO -->
+      <div class="card-group">
+        <div class="card-title">📍 Alamat Pengiriman</div>
+        <div class="form-group">
+          <label>Alamat Lengkap</label>
+          <textarea id="cust-address" rows="3" placeholder="Jl. Mawar No. 12, RT 01/02..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Kode Pos</label>
+          <input type="text" id="cust-postal" placeholder="12345">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">Beli sekarang ✨</button>
+    </form>
+
+    <!-- INVOICE BOX -->
+    <div id="invoice-box">
+      <div class="invoice-card">
+        <div style="font-size:32px;">📄</div>
+        <h3 style="margin:6px 0;">Invoice Pemesanan</h3>
+        <p style="font-size:12px; color:#64748B; margin-bottom:14px;">Munchkin Munch Official</p>
+        <div id="invoice-details" style="text-align:left; background:#F8FAFC; padding:12px; border-radius:10px; border:1px solid #E2E8F0; font-size:13px; margin-bottom:14px;"></div>
+        <p style="font-size:11px; color:#64748B;">Silakan selesaikan pembayaran sesuai instruksi Admin via WhatsApp. Terima kasih! ❤️</p>
+      </div>
     </div>
   </div>
-
-  <script>
+    <script>
     const SUPABASE_URL = "https://bygvlittjrnjidjnyuko.supabase.co"; 
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5Z3ZsaXR0anJuamlkam55dWtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NzA5MzQsImV4cCI6MjEwMTE0NjkzNH0.OOEexyrNwfIkmrMdMW5kP9JabOWDHIeNJaFn4LdV87g";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let productsData = [];
+    let productsList = [];
 
-    window.onload = async () => {
-      await fetchProducts();
-      checkHash();
+    window.onload = () => {
+      if (window.location.hash.startsWith('#invoice-')) {
+        showInvoice(window.location.hash.replace('#invoice-', ''));
+      } else {
+        loadProducts();
+      }
     };
 
-    function checkHash() {
-      const hash = window.location.hash;
-      if (hash.startsWith('#invoice-')) {
-        const id = hash.replace('#invoice-', '');
-        loadInvoice(id);
-      }
-    }
-
-    async function fetchProducts() {
-      try {
-        const { data, error } = await supabase.from('products').select('*').order('name');
-        if (data && data.length > 0) {
-          productsData = data;
-          renderProductDropdown();
-        } else {
-          const select = document.getElementById('cust-product');
-          select.innerHTML = '<option value="">Belum ada produk tersedia</option>';
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    function renderProductDropdown() {
+    async function loadProducts() {
+      const { data } = await supabase.from('products').select('*').gt('stock', 0);
+      productsList = data || [];
       const select = document.getElementById('cust-product');
-      select.innerHTML = '';
-      
-      productsData.forEach(p => {
-        const label = `${p.name} - Rp${Number(p.price).toLocaleString('id-ID')} ${p.stock <= 0 ? '(STOK HABIS)' : '[Stok: ' + p.stock + ']'}`;
-        const option = document.createElement('option');
-        option.value = p.id;
-        option.textContent = label;
-        if (p.stock <= 0) option.disabled = true;
-        select.appendChild(option);
+      select.innerHTML = '<option value="">-- Pilih Produk --</option>';
+      productsList.forEach(p => {
+        select.innerHTML += `<option value="${p.id}" data-price="${p.price}">${p.name} - Rp${Number(p.price).toLocaleString('id-ID')}</option>`;
       });
-
-      calculateTotal();
     }
 
-    function calculateTotal() {
-      const prodId = document.getElementById('cust-product').value;
+    function updateTotal() {
+      const select = document.getElementById('cust-product');
+      const opt = select.options[select.selectedIndex];
+      const price = opt ? parseInt(opt.getAttribute('data-price') || 0) : 0;
       const qty = parseInt(document.getElementById('cust-qty').value) || 1;
-      const selectedProd = productsData.find(p => p.id === prodId);
-
-      if (selectedProd) {
-        const total = selectedProd.price * qty;
-        document.getElementById('total-price-display').innerText = `Rp${Number(total).toLocaleString('id-ID')}`;
-      } else {
-        document.getElementById('total-price-display').innerText = 'Rp0';
-      }
+      document.getElementById('cust-total').innerText = `Rp${(price * qty).toLocaleString('id-ID')}`;
     }
 
-    async function handleOrderSubmit(e) {
+    async function submitOrder(e) {
       e.preventDefault();
-      const btn = document.getElementById('submit-btn');
-      btn.innerText = 'Memproses...';
-      btn.disabled = true;
+      const productId = document.getElementById('cust-product').value;
+      const qty = parseInt(document.getElementById('cust-qty').value);
+      const name = document.getElementById('cust-name').value;
+      const wa = document.getElementById('cust-wa').value;
+      const address = document.getElementById('cust-address').value;
+      const postal = document.getElementById('cust-postal').value;
 
-      const prodId = document.getElementById('cust-product').value;
-      const qty = parseInt(document.getElementById('cust-qty').value) || 1;
-      const selectedProd = productsData.find(p => p.id === prodId);
+      const prod = productsList.find(p => p.id === productId);
+      if (!prod) return alert('Pilih produk terlebih dahulu!');
 
-      if (!selectedProd || selectedProd.stock < qty) {
-        alert('Stok tidak mencukupi!');
-        btn.innerText = '🚀 Submit Order';
-        btn.disabled = false;
-        return;
-      }
+      const totalPrice = prod.price * qty;
 
-      const payload = {
-        customer_name: document.getElementById('cust-name').value,
-        whatsapp: document.getElementById('cust-wa').value,
-        product_id: prodId,
-        quantity: qty,
-        address: document.getElementById('cust-address').value,
-        postal_code: document.getElementById('cust-postal').value,
-        payment_method: document.getElementById('cust-payment').value,
-        total_price: selectedProd.price * qty,
-        status: 'pending'
-      };
+      const { data, error } = await supabase.from('orders').insert([{
+        product_id: productId, quantity: qty, customer_name: name,
+        whatsapp: wa, address: address, postal_code: postal,
+        total_price: totalPrice, status: 'pending'
+      }]).select();
 
-      const { error } = await supabase.from('orders').insert([payload]);
-
-      if (!error) {
-        document.getElementById('order-form').classList.add('hidden');
-        document.getElementById('order-success').classList.remove('hidden');
+      if (!error && data.length > 0) {
+        alert('Pesanan berhasil dibuat!');
+        window.location.hash = `#invoice-${data[0].id}`;
+        showInvoice(data[0].id);
       } else {
-        alert('Gagal mengirim pesanan: ' + error.message);
+        alert('Gagal membuat pesanan: ' + error?.message);
       }
-      btn.innerText = '🚀 Submit Order';
-      btn.disabled = false;
     }
 
-    function resetOrderForm() {
-      document.getElementById('order-form').reset();
-      document.getElementById('order-form').classList.remove('hidden');
-      document.getElementById('order-success').classList.add('hidden');
-      fetchProducts();
-    }
-
-    async function loadInvoice(id) {
+    async function showInvoice(id) {
+      document.getElementById('order-form').style.display = 'none';
+      document.getElementById('invoice-box').style.display = 'block';
       const { data } = await supabase.from('orders').select('*, products(name)').eq('id', id).single();
       if (data) {
-        document.getElementById('view-order').classList.add('hidden');
-        document.getElementById('view-invoice').classList.remove('hidden');
-
-        document.getElementById('inv-name').innerText = data.customer_name;
-        document.getElementById('inv-item').innerText = `${data.products?.name || 'Produk'} (x${data.quantity})`;
-        document.getElementById('inv-total').innerText = `Rp${Number(data.total_price).toLocaleString('id-ID')}`;
-        document.getElementById('inv-status').innerText = data.status.toUpperCase();
+        document.getElementById('invoice-details').innerHTML = `
+          <div><b>No. Order:</b> #${data.id.substring(0,8)}</div>
+          <div><b>Nama:</b> ${data.customer_name}</div>
+          <div><b>Item:</b> ${data.products?.name} (x${data.quantity})</div>
+          <div><b>Total Tagihan:</b> Rp${Number(data.total_price).toLocaleString('id-ID')}</div>
+          <div><b>Status:</b> <b style="color:${data.status === 'paid' ? 'green' : 'orange'}">${data.status.toUpperCase()}</b></div>
+        `;
       }
     }
   </script>
