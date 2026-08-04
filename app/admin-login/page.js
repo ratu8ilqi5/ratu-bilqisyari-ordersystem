@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { useState } from "react";
 import { C, APP_NAME } from "@/lib/constants";
 import { NeoButton, NeoCard } from "@/components/ui";

@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { C, ACCENTS, SHOP, APP_NAME, rupiah, normalizeWA, makeOrderId } from "@/lib/constants";
