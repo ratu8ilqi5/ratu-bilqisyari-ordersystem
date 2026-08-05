@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
     <div className="max-w-sm mx-auto px-4 py-20">
       <div className="text-center mb-4">
         <h1 className="ff-display text-3xl" style={{ color: C.grape }}>{APP_NAME}</h1>
-        <p className="text-xs opacity-60">Khusus admin</p>
+        <p className="text-xs">Khusus admin</p>
       </div>
       <NeoCard accent={C.grape}>
         <form onSubmit={handleSubmit}>
@@ -44,6 +44,7 @@ export default function AdminLoginPage() {
             className="w-full mb-3 px-3 py-2"
             style={{ border: `2px solid ${C.midnight}`, borderRadius: 0 }}
             autoFocus
+            autoComplete="current-password"
           />
           {error && <p className="text-xs mb-3" style={{ color: C.grape }}>{error}</p>}
           <NeoButton full color={C.grape} disabled={!password || loading} type="submit">
