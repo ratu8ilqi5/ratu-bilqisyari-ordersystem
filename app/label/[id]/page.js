@@ -68,15 +68,15 @@ async function generateLabelDataURL(order, wMm, hMm, store) {
   ctx.beginPath(); ctx.moveTo(pad * 0.5, pad * 0.5 + barH); ctx.lineTo(W - pad * 0.5, pad * 0.5 + barH); ctx.stroke();
 
   ctx.textAlign = "left";
-  ctx.font = `700 ${Math.round(W * 0.045)}px 'Space Grotesk'`;
+  ctx.font = `700 ${Math.round(W * 0.045)}px 'Bricolage Grotesque'`;
   ctx.fillStyle = C.midnight;
   ctx.fillText(store.sender_name, pad, pad * 0.5 + barH * 0.55);
-  ctx.font = `${Math.round(W * 0.022)}px 'Space Grotesk'`;
+  ctx.font = `${Math.round(W * 0.022)}px 'Bricolage Grotesque'`;
   ctx.fillText(`${order.items.length} produk${store.contact_number ? " · " + store.contact_number : ""}`, pad, pad * 0.5 + barH * 0.85);
 
   let cy = pad * 0.5 + barH + H * 0.08;
   ctx.textAlign = "center";
-  ctx.font = `${Math.round(W * 0.1)}px 'VT323'`;
+  ctx.font = `${Math.round(W * 0.1)}px 'Bitcount Prop Single'`;
   ctx.fillStyle = C.grape;
   ctx.fillText("PRIORITY GIFT", W / 2, cy);
   cy += H * 0.02;
@@ -88,13 +88,13 @@ async function generateLabelDataURL(order, wMm, hMm, store) {
     ctx.strokeStyle = C.midnight; ctx.lineWidth = Math.max(1, W * 0.004);
     ctx.strokeRect(pad, yy, W - pad * 2, boxH);
     ctx.textAlign = "left";
-    ctx.font = `700 ${Math.round(W * 0.03)}px 'Space Grotesk'`;
+    ctx.font = `700 ${Math.round(W * 0.03)}px 'Bricolage Grotesque'`;
     ctx.fillStyle = C.olive;
     ctx.fillText(title.toUpperCase(), pad * 1.5, yy + boxH * 0.2);
-    ctx.font = `${Math.round(W * 0.036)}px 'Space Grotesk'`;
+    ctx.font = `${Math.round(W * 0.036)}px 'Bricolage Grotesque'`;
     ctx.fillStyle = C.midnight;
     ctx.fillText(name, pad * 1.5, yy + boxH * 0.42);
-    ctx.font = `${Math.round(W * 0.026)}px 'Space Grotesk'`;
+    ctx.font = `${Math.round(W * 0.026)}px 'Bricolage Grotesque'`;
     wrapText(ctx, addr, pad * 1.5, yy + boxH * 0.62, W - pad * 3, W * 0.042);
   }
   const boxH = H * 0.15;
@@ -106,13 +106,13 @@ async function generateLabelDataURL(order, wMm, hMm, store) {
   drawBarcode(ctx, pad, cy, W - pad * 2, H * 0.06, order.id);
   cy += H * 0.09;
   ctx.textAlign = "center";
-  ctx.font = `${Math.round(W * 0.04)}px 'VT323'`;
+  ctx.font = `${Math.round(W * 0.04)}px 'Bitcount Prop Single'`;
   ctx.fillStyle = C.midnight;
   ctx.fillText(`TRACKING: ${order.id}`, W / 2, cy);
 
   if (store.receipt_footer) {
     cy += H * 0.055;
-    ctx.font = `${Math.round(W * 0.024)}px 'Space Grotesk'`;
+    ctx.font = `${Math.round(W * 0.024)}px 'Bricolage Grotesque'`;
     ctx.fillStyle = C.midnight;
     wrapText(ctx, store.receipt_footer, W / 2 - (W - pad * 3) / 2, cy, W - pad * 3, W * 0.035);
   }
