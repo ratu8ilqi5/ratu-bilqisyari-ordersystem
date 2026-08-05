@@ -36,8 +36,15 @@ export default function AdminLoginPage() {
       </div>
       <NeoCard accent={C.grape}>
         <form onSubmit={handleSubmit}>
-          <label className="text-xs font-semibold block mb-1">Password Admin</label>
+          <label
+            htmlFor="admin-password"
+            className="text-xs font-semibold block mb-1"
+          >
+            Password Admin
+          </label>
+              
           <input
+            id="admin-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
