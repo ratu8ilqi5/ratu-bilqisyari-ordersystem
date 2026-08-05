@@ -31,7 +31,7 @@ export default function AdminLoginPage() {
   return (
     <div className="max-w-sm mx-auto px-4 py-20">
       <div className="text-center mb-4">
-        <h1 className="ff-display text-3xl" style={{ color: C.grape }}>{APP_NAME}</h1>
+        <h1 className="ff-display text-3xl" style={{ color: C.midnight }}>{APP_NAME}</h1>
         <p className="text-xs">Khusus admin</p>
       </div>
       <NeoCard accent={C.grape}>
