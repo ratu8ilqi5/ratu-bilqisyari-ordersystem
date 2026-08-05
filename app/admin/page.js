@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { C, ACCENTS, rupiah, fileToBase64, APP_NAME } from "@/lib/constants";
 import { NeoButton, NeoCard, Badge } from "@/components/ui";
-import { IconCheck, IconLink, IconWhatsapp, IconDownload, IconPlus } from "@/components/icons";
+import { IconCheck, IconLink, IconWhatsapp, IconDownload, IconPlus, IconDelete } from "@/components/icons";
 
 function invoiceLink(orderId) {
   return `${window.location.origin}/invoice/${orderId}`;
@@ -58,6 +58,14 @@ export default function AdminPage() {
 
   async function setOrderStatus(id, status) {
     await supabase.from("orders").update({ status }).eq("id", id);
+    loadOrders();
+  }
+  async function deleteOrder(o) {
+    const warn = o.status === "verified"
+      ? `Order ${o.id} ini sudah LUNAS. Menghapusnya akan menghilangkan data ini dari Rekap penjualan juga. Yakin mau hapus?`
+      : `Hapus order ${o.id}? Data ini gak bisa dikembalikan.`;
+    if (!window.confirm(warn)) return;
+    await supabase.from("orders").delete().eq("id", o.id);
     loadOrders();
   }
   async function addProduct() {
@@ -166,7 +174,16 @@ export default function AdminPage() {
                         <div className="text-xs opacity-70 max-w-md">{o.address}</div>
                         <div className="text-xs opacity-50">{new Date(o.created_at).toLocaleString("id-ID")}</div>
                       </div>
-                      <Badge status={o.status} />
+                      <div className="flex items-start gap-2">
+                        <Badge status={o.status} />
+                        <button
+                          onClick={() => deleteOrder(o)}
+                          title="Hapus order"
+                          style={{ border: `2px solid ${C.midnight}`, background: C.white, padding: "3px 6px" }}
+                        >
+                          <IconDelete />
+                        </button>
+                      </div>
                     </div>
                     <div className="text-sm mb-2">
                       {o.items.map((it, idx) => (
