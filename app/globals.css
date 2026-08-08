@@ -1,22 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Bitcount+Prop+Single:wght@400..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,400..600,0..1,-25..0&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Bitcount+Prop+Single:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,400..600,0..1,-25..0&display=swap');
 
 .ff-display {
   font-family: 'Bitcount Prop Single', monospace;
   letter-spacing: 0.5px;
 }
-
+.ff-heading {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
 .ff-body {
   font-family: 'Bricolage Grotesque', sans-serif;
 }
-
 body {
-  background: #FBF3E7;
-  color: #023047;
+  background: #FBF1E7;
+  color: #1A120B;
 }
 
 .material-symbols-sharp {

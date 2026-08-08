@@ -152,7 +152,7 @@ export default function AdminPage() {
     return { omzet, orderCount: paid.length, totalItems: paid.reduce((s, o) => s + o.items.reduce((a, it) => a + it.qty, 0), 0), topItems };
   }, [filteredOrders]);
 
-  if (!orders) return <div className="ff-display text-2xl p-8">MEMUAT...</div>;
+  if (!orders) return <div className="ff-heading text-2xl p-8">MEMUAT...</div>;
 
   const TABS = [
     { key: "orders", label: `📋 ORDERS (${orders.length})`, color: C.grape },
@@ -164,9 +164,12 @@ export default function AdminPage() {
     <div>
       <div style={{ borderBottom: `4px solid ${C.midnight}`, background: C.white }} className="px-4 py-4 sm:px-8">
         <div className="max-w-5xl mx-auto flex justify-between items-start">
-          <div>
-            <h1 className="ff-display text-3xl sm:text-4xl">{APP_NAME}</h1>
-            <p className="text-xs opacity-60">Dashboard Admin</p>
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="" className="w-10 h-10 sm:w-12 sm:h-12" style={{ flexShrink: 0 }} />
+            <div>
+              <h1 className="ff-heading text-3xl sm:text-4xl">{APP_NAME}</h1>
+              <p className="text-xs opacity-60">Dashboard Admin</p>
+            </div>
           </div>
           <NeoButton
             small
@@ -360,13 +363,13 @@ export default function AdminPage() {
                 <div className="ff-display text-3xl" style={{ color: C.coffee }}>{recap.totalItems}</div>
               </NeoCard>
             </div>
-            <h3 className="ff-display text-xl mb-2" style={{ color: C.coffee }}>PRODUK TERLARIS</h3>
+            <h3 className="ff-heading text-xl mb-2" style={{ color: C.coffee }}>PRODUK TERLARIS</h3>
             <NeoCard accent={C.coffee}>
               {recap.topItems.length === 0 ? <p className="text-sm opacity-60">Belum ada data.</p> : recap.topItems.map(([name, qty]) => (
                 <div key={name} className="flex justify-between text-sm py-1"><span>{name}</span><span className="font-semibold">{qty} terjual</span></div>
               ))}
             </NeoCard>
-            <h3 className="ff-display text-xl mt-6 mb-2" style={{ color: C.midnight }}>DETAIL TRANSAKSI</h3>
+            <h3 className="ff-heading text-xl mt-6 mb-2" style={{ color: C.midnight }}>DETAIL TRANSAKSI</h3>
             <div className="grid gap-2">
               {filteredOrders.map((o) => (
                 <div key={o.id} className="text-xs flex flex-wrap justify-between gap-2 p-2" style={{ border: `1px solid ${C.midnight}`, borderRadius: 0 }}>
@@ -384,7 +387,7 @@ export default function AdminPage() {
         {tab === "setting" && (
           <div className="grid gap-6 md:grid-cols-2 max-w-3xl">
             <div>
-              <h3 className="ff-display text-xl mb-2" style={{ color: C.coffee }}>INFO PEMBAYARAN</h3>
+              <h3 className="ff-heading text-xl mb-2" style={{ color: C.coffee }}>INFO PEMBAYARAN</h3>
               <NeoCard accent={C.coffee}>
                 <label className="text-xs font-semibold block mb-1">Nama Bank / E-wallet</label>
                 <input value={settingsForm.bank_name} onChange={(e) => setSettingsForm({ ...settingsForm, bank_name: e.target.value })} className="w-full mb-3 px-3 py-2" style={{ border: `2px solid ${C.midnight}`, borderRadius: 0 }} placeholder="BCA" />
@@ -401,7 +404,7 @@ export default function AdminPage() {
             </div>
 
             <div>
-              <h3 className="ff-display text-xl mb-2" style={{ color: C.grape }}>INFO TOKO & LABEL</h3>
+              <h3 className="ff-heading text-xl mb-2" style={{ color: C.grape }}>INFO TOKO & LABEL</h3>
               <NeoCard accent={C.grape}>
                 <label className="text-xs font-semibold block mb-1">Nama Pengirim (Toko)</label>
                 <input value={settingsForm.sender_name} onChange={(e) => setSettingsForm({ ...settingsForm, sender_name: e.target.value })} className="w-full mb-3 px-3 py-2" style={{ border: `2px solid ${C.midnight}`, borderRadius: 0 }} placeholder="Ratu Bilqis Syar'i" />

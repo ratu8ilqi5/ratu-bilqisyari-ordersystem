@@ -7,8 +7,8 @@ import { NeoButton, NeoCard } from "@/components/ui";
 import { IconDownload } from "@/components/icons";
 
 const PRESETS = [
-  { key: "80", label: "Thermal 80mm", w: 80, h: 150 },
-  { key: "58", label: "Thermal 58mm", w: 58, h: 100 },
+  { key: "80", label: "Thermal 80mm", w: 80, h: null },
+  { key: "58", label: "Thermal 58mm", w: 58, h: null },
   { key: "custom", label: "Custom", w: null, h: null },
 ];
 const PX_PER_MM = 8; // ~203dpi, standard thermal printer resolution
@@ -46,22 +46,25 @@ function drawBarcode(ctx, x, y, w, h, seedStr) {
   }
 }
 
-// Layout scales proportionally to whatever W x H (in px) is passed in,
-// so the same drawing works for a small 58mm roll or a bigger 80mm one.
+// Layout uses fixed pixel offsets scaled by width only, so height can grow
+// automatically to fit however many items are in the order (thermal rolls
+// print continuously anyway — no fixed page size to worry about). When hMm
+// is given (custom mode), the canvas is locked to that height instead.
 async function generateLabelDataURL(order, wMm, hMm, store) {
   await document.fonts.ready;
   const W = Math.round(wMm * PX_PER_MM);
-  const H = Math.round(hMm * PX_PER_MM);
+  const autoHeight = !hMm;
+  const H_GUESS = autoHeight ? Math.round(2400 * (W / 640)) : Math.round(hMm * PX_PER_MM);
+
   const canvas = document.createElement("canvas");
-  canvas.width = W; canvas.height = H;
+  canvas.width = W; canvas.height = H_GUESS;
   const ctx = canvas.getContext("2d");
   const pad = Math.round(W * 0.04);
   ctx.setLineDash([Math.max(4, W * 0.018), Math.max(3, W * 0.01)]); // broken-line style for every stroke below
 
-  ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, W, H);
-  ctx.strokeStyle = C.midnight; ctx.lineWidth = Math.max(2, W * 0.008); ctx.strokeRect(pad * 0.5, pad * 0.5, W - pad, H - pad);
+  ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, W, H_GUESS);
 
-  const barH = H * 0.09;
+  const barH = Math.round(W * 0.14);
   ctx.fillStyle = tint(C.coffee, 0.78);
   ctx.fillRect(pad * 0.5, pad * 0.5, W - pad, barH);
   ctx.strokeStyle = C.midnight; ctx.lineWidth = Math.max(1, W * 0.004);
@@ -74,50 +77,87 @@ async function generateLabelDataURL(order, wMm, hMm, store) {
   ctx.font = `${Math.round(W * 0.022)}px 'Bricolage Grotesque'`;
   ctx.fillText(`${order.items.length} produk${store.contact_number ? " · " + store.contact_number : ""}`, pad, pad * 0.5 + barH * 0.85);
 
-  let cy = pad * 0.5 + barH + H * 0.08;
+  let cy = pad * 0.5 + barH + Math.round(W * 0.13);
   ctx.textAlign = "center";
-  ctx.font = `${Math.round(W * 0.1)}px 'Bitcount Prop Single'`;
+  ctx.font = `700 ${Math.round(W * 0.09)}px 'Bricolage Grotesque'`;
   ctx.fillStyle = C.grape;
   ctx.fillText("PRIORITY GIFT", W / 2, cy);
-  cy += H * 0.02;
+  cy += Math.round(W * 0.03);
   ctx.strokeStyle = C.grape; ctx.lineWidth = Math.max(1, W * 0.006);
   ctx.beginPath(); ctx.moveTo(pad * 1.2, cy); ctx.lineTo(W - pad * 1.2, cy); ctx.stroke();
-  cy += H * 0.045;
+  cy += Math.round(W * 0.07);
 
-  function section(title, name, addr, yy, boxH) {
+  function section(title, name, addr, boxH) {
     ctx.strokeStyle = C.midnight; ctx.lineWidth = Math.max(1, W * 0.004);
-    ctx.strokeRect(pad, yy, W - pad * 2, boxH);
+    ctx.strokeRect(pad, cy, W - pad * 2, boxH);
     ctx.textAlign = "left";
     ctx.font = `700 ${Math.round(W * 0.03)}px 'Bricolage Grotesque'`;
     ctx.fillStyle = C.olive;
-    ctx.fillText(title.toUpperCase(), pad * 1.5, yy + boxH * 0.2);
+    ctx.fillText(title.toUpperCase(), pad * 1.5, cy + boxH * 0.22);
     ctx.font = `${Math.round(W * 0.036)}px 'Bricolage Grotesque'`;
     ctx.fillStyle = C.midnight;
-    ctx.fillText(name, pad * 1.5, yy + boxH * 0.42);
+    ctx.fillText(name, pad * 1.5, cy + boxH * 0.46);
     ctx.font = `${Math.round(W * 0.026)}px 'Bricolage Grotesque'`;
-    wrapText(ctx, addr, pad * 1.5, yy + boxH * 0.62, W - pad * 3, W * 0.042);
+    wrapText(ctx, addr, pad * 1.5, cy + boxH * 0.68, W - pad * 3, W * 0.042);
+    cy += boxH + Math.round(W * 0.02);
   }
-  const boxH = H * 0.15;
-  section("Kirim dari", store.sender_name, store.sender_address || "-", cy, boxH);
-  cy += boxH + H * 0.012;
-  section("Kirim ke", order.name, order.address + " · " + order.wa, cy, boxH);
-  cy += boxH + H * 0.05;
+  const boxH = Math.round(W * 0.24);
+  section("Kirim dari", store.sender_name, store.sender_address || "-", boxH);
+  section("Kirim ke", order.name, order.address + " · " + order.wa, boxH);
+  cy += Math.round(W * 0.03);
 
-  drawBarcode(ctx, pad, cy, W - pad * 2, H * 0.06, order.id);
-  cy += H * 0.09;
+  // Daftar item — dicetak biar kurir/checker tau isi paket tanpa buka bungkus.
+  ctx.textAlign = "left";
+  ctx.font = `700 ${Math.round(W * 0.03)}px 'Bricolage Grotesque'`;
+  ctx.fillStyle = C.olive;
+  ctx.fillText("ISI PAKET", pad, cy);
+  cy += Math.round(W * 0.02);
+  ctx.strokeStyle = C.midnight; ctx.lineWidth = Math.max(1, W * 0.004);
+  ctx.beginPath(); ctx.moveTo(pad, cy); ctx.lineTo(W - pad, cy); ctx.stroke();
+  cy += Math.round(W * 0.045);
+
+  ctx.font = `${Math.round(W * 0.032)}px 'Bricolage Grotesque'`;
+  ctx.fillStyle = C.midnight;
+  const lineH = Math.round(W * 0.044);
+  order.items.forEach((it, idx) => {
+    const detail = [it.color, it.size].filter(Boolean).join(", ");
+    const label = `${idx + 1}. ${it.name}${detail ? ` — ${detail}` : ""}`;
+    ctx.textAlign = "left";
+    const lines = wrapText(ctx, label, pad, cy, W - pad * 2 - Math.round(W * 0.14), lineH);
+    ctx.textAlign = "right";
+    ctx.fillText(`x${it.qty}`, W - pad, cy);
+    ctx.textAlign = "left";
+    cy += lineH * lines + Math.round(W * 0.012);
+  });
+  cy += Math.round(W * 0.03);
+
+  drawBarcode(ctx, pad, cy, W - pad * 2, Math.round(W * 0.09), order.id);
+  cy += Math.round(W * 0.14);
   ctx.textAlign = "center";
   ctx.font = `${Math.round(W * 0.04)}px 'Bitcount Prop Single'`;
   ctx.fillStyle = C.midnight;
   ctx.fillText(`TRACKING: ${order.id}`, W / 2, cy);
 
   if (store.receipt_footer) {
-    cy += H * 0.055;
+    cy += Math.round(W * 0.06);
     ctx.font = `${Math.round(W * 0.024)}px 'Bricolage Grotesque'`;
     ctx.fillStyle = C.midnight;
-    wrapText(ctx, store.receipt_footer, W / 2 - (W - pad * 3) / 2, cy, W - pad * 3, W * 0.035);
+    ctx.textAlign = "left";
+    wrapText(ctx, store.receipt_footer, pad, cy, W - pad * 2, Math.round(W * 0.035));
   }
 
-  return canvas.toDataURL("image/jpeg", 0.95);
+  cy += Math.round(W * 0.08); // bottom breathing room
+  ctx.strokeStyle = C.midnight; ctx.lineWidth = Math.max(2, W * 0.008);
+  ctx.setLineDash([]);
+  ctx.strokeRect(pad * 0.5, pad * 0.5, W - pad, Math.min(cy, H_GUESS) - pad);
+
+  const finalH = autoHeight ? Math.min(H_GUESS, Math.round(cy)) : H_GUESS;
+  if (finalH === H_GUESS) return canvas.toDataURL("image/jpeg", 0.95);
+
+  const finalCanvas = document.createElement("canvas");
+  finalCanvas.width = W; finalCanvas.height = finalH;
+  finalCanvas.getContext("2d").drawImage(canvas, 0, 0, W, finalH, 0, 0, W, finalH);
+  return finalCanvas.toDataURL("image/jpeg", 0.95);
 }
 
 export default function LabelPage({ params }) {

@@ -34,14 +34,15 @@ export default function InvoicePage({ params }) {
     setUploading(false);
   }
 
-  if (order === undefined) return <div className="ff-display text-2xl p-8">MEMUAT...</div>;
+  if (order === undefined) return <div className="ff-heading text-2xl p-8">MEMUAT...</div>;
   if (order === null) return <div className="p-8">Invoice tidak ditemukan. Cek kembali link yang dikirim admin.</div>;
 
   return (
     <div className="max-w-md mx-auto px-4 py-8">
       <div className="text-center mb-4">
-        <h1 className="ff-display text-3xl" style={{ color: C.grape }}>{SHOP.name}</h1>
-        <p className="ff-display text-xl" style={{ color: C.olive }}>Invoice Pesanan</p>
+        <img src="/logo.png" alt="" className="w-14 h-14 mx-auto mb-2" />
+        <h1 className="ff-heading text-3xl" style={{ color: C.grape }}>{SHOP.name}</h1>
+        <p className="ff-heading text-xl" style={{ color: C.olive }}>Invoice Pesanan</p>
       </div>
 
       <NeoCard accent={C.grape}>
@@ -69,12 +70,12 @@ export default function InvoicePage({ params }) {
       <div className="mt-6">
         {order.status === "verified" ? (
           <NeoCard accent={C.coffee} style={{ textAlign: "center" }}>
-            <div className="ff-display text-2xl" style={{ color: C.coffee }}>PEMBAYARAN TERKONFIRMASI</div>
+            <div className="ff-heading text-2xl" style={{ color: C.coffee }}>PEMBAYARAN TERKONFIRMASI</div>
             <p className="text-sm mt-1">Terima kasih! Pesananmu sedang diproses.</p>
           </NeoCard>
         ) : (
           <NeoCard accent={C.olive}>
-            <div className="ff-display text-xl mb-2" style={{ color: C.olive }}>CARA BAYAR</div>
+            <div className="ff-heading text-xl mb-2" style={{ color: C.olive }}>CARA BAYAR</div>
             {order.payment_method && (
               <div className="text-xs mb-3 opacity-70 text-center">
                 Metode yang kamu pilih: <span className="font-semibold">{order.payment_method === "qris" ? "QRIS" : order.payment_method === "cash" ? "Cash" : "Transfer Bank"}</span>
@@ -99,7 +100,7 @@ export default function InvoicePage({ params }) {
                     <p className="text-sm mb-4 opacity-70">Info rekening belum diisi admin. Hubungi toko untuk detail pembayaran.</p>
                   )
                 )}
-                <div className="ff-display text-xl mb-2" style={{ color: C.grape }}>UPLOAD BUKTI TRANSFER</div>
+                <div className="ff-heading text-xl mb-2" style={{ color: C.grape }}>UPLOAD BUKTI TRANSFER</div>
                 {order.proof_image ? (
                   <p className="text-sm" style={{ color: C.coffee }}>✓ Bukti sudah diterima. Admin akan segera verifikasi.</p>
                 ) : (

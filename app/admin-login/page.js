@@ -31,27 +31,20 @@ export default function AdminLoginPage() {
   return (
     <div className="max-w-sm mx-auto px-4 py-20">
       <div className="text-center mb-4">
-        <h1 className="ff-display text-3xl" style={{ color: C.midnight }}>{APP_NAME}</h1>
-        <p className="text-xs">Khusus admin</p>
+        <img src="/logo.png" alt="" className="w-16 h-16 mx-auto mb-2" />
+        <h1 className="ff-heading text-3xl" style={{ color: C.grape }}>{APP_NAME}</h1>
+        <p className="text-xs opacity-60">Khusus admin</p>
       </div>
       <NeoCard accent={C.grape}>
         <form onSubmit={handleSubmit}>
-          <label
-            htmlFor="admin-password"
-            className="text-xs font-semibold block mb-1"
-          >
-            Password Admin
-          </label>
-              
+          <label className="text-xs font-semibold block mb-1">Password Admin</label>
           <input
-            id="admin-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full mb-3 px-3 py-2"
             style={{ border: `2px solid ${C.midnight}`, borderRadius: 0 }}
             autoFocus
-            autoComplete="current-password"
           />
           {error && <p className="text-xs mb-3" style={{ color: C.grape }}>{error}</p>}
           <NeoButton full color={C.grape} disabled={!password || loading} type="submit">

@@ -172,7 +172,7 @@ export default function CustomerPage() {
     return (
       <div className="max-w-md mx-auto px-4 py-16">
         <NeoCard accent={C.coffee} style={{ textAlign: "center" }}>
-          <div className="ff-display text-3xl mb-2" style={{ color: C.coffee }}>PESANAN TERKIRIM</div>
+          <div className="ff-heading text-3xl mb-2" style={{ color: C.coffee }}>PESANAN TERKIRIM</div>
           <p className="mb-1">Nomor pesananmu:</p>
           <p className="ff-display text-4xl mb-4" style={{ color: C.grape }}>{successId}</p>
           <p className="text-sm mb-4">
@@ -219,9 +219,12 @@ export default function CustomerPage() {
   return (
     <div>
       <div style={{ borderBottom: `4px solid ${C.midnight}`, background: C.white }} className="px-4 py-4 sm:px-8">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="ff-display text-3xl sm:text-4xl" style={{ color: C.grape }}>{SHOP.name}</h1>
-          <p className="text-xs opacity-60">{APP_NAME}</p>
+        <div className="max-w-3xl mx-auto flex items-center gap-3">
+          <img src="/logo.png" alt="" className="w-10 h-10 sm:w-12 sm:h-12" style={{ flexShrink: 0 }} />
+          <div>
+            <h1 className="ff-heading text-3xl sm:text-4xl" style={{ color: C.grape }}>{SHOP.name}</h1>
+            <p className="text-xs opacity-60">{APP_NAME}</p>
+          </div>
         </div>
       </div>
 
@@ -246,7 +249,7 @@ export default function CustomerPage() {
         {/* STEP 0 — Data Pemesan */}
         {step === 0 && (
           <NeoCard accent={C.olive}>
-            <h2 className="ff-display text-2xl mb-3" style={{ color: C.olive }}>DATA PEMESAN</h2>
+            <h2 className="ff-heading text-2xl mb-3" style={{ color: C.olive }}>DATA PEMESAN</h2>
             <label className="text-xs font-semibold block mb-1">Nama Lengkap</label>
             <input
               value={form.name}
@@ -270,7 +273,7 @@ export default function CustomerPage() {
         {/* STEP 1 — Pengambilan Pesanan */}
         {step === 1 && (
           <NeoCard accent={C.grape}>
-            <h2 className="ff-display text-2xl mb-3" style={{ color: C.grape }}>PENGAMBILAN PESANAN</h2>
+            <h2 className="ff-heading text-2xl mb-3" style={{ color: C.grape }}>PENGAMBILAN PESANAN</h2>
             <div className="grid sm:grid-cols-2 gap-3 mb-4">
               {[
                 { key: "pickup", label: "Pickup / Ambil Sendiri" },
@@ -375,7 +378,7 @@ export default function CustomerPage() {
         {/* STEP 2 — Pembayaran */}
         {step === 2 && (
           <NeoCard accent={C.olive}>
-            <h2 className="ff-display text-2xl mb-3" style={{ color: C.olive }}>PEMBAYARAN</h2>
+            <h2 className="ff-heading text-2xl mb-3" style={{ color: C.olive }}>PEMBAYARAN</h2>
             {form.pickupType === "kirim" && (
               <p className="text-xs opacity-60 mb-3">Cash gak tersedia buat pesanan Kirim Kurir.</p>
             )}
@@ -391,14 +394,14 @@ export default function CustomerPage() {
         {step === 3 && (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="ff-display text-2xl" style={{ color: C.grape }}>DETAIL PESANAN</h2>
+              <h2 className="ff-heading text-2xl" style={{ color: C.grape }}>DETAIL PESANAN</h2>
               <span className="text-xs opacity-60">{items.length} item</span>
             </div>
             <div className="space-y-4">
               {items.map((item, index) => (
                 <NeoCard key={index} accent={C.grape}>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="ff-display text-xl" style={{ color: C.grape }}>ITEM {index + 1}</div>
+                    <div className="ff-heading text-xl" style={{ color: C.grape }}>ITEM {index + 1}</div>
                     {items.length > 1 && (
                       <button
                         type="button"
@@ -502,7 +505,7 @@ export default function CustomerPage() {
         {/* STEP 4 — Review */}
         {step === 4 && (
           <NeoCard accent={C.coffee}>
-            <h2 className="ff-display text-2xl mb-3" style={{ color: C.coffee }}>REVIEW PESANAN</h2>
+            <h2 className="ff-heading text-2xl mb-3" style={{ color: C.coffee }}>REVIEW PESANAN</h2>
 
             <div className="text-xs font-semibold opacity-60 mb-1">DATA PEMESAN</div>
             <div className="text-sm mb-3">{form.name} · {form.wa}</div>
