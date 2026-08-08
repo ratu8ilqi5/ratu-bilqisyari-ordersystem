@@ -50,8 +50,16 @@ export default function InvoicePage({ params }) {
         <div className="flex justify-between text-sm mb-4"><span className="opacity-70">Tanggal</span><span className="font-semibold">{new Date(order.created_at).toLocaleDateString("id-ID")}</span></div>
         <div style={{ borderTop: `2px solid ${C.midnight}` }} className="pt-3 mb-3">
           {order.items.map((it, i) => (
-            <div key={i} className="flex justify-between text-sm py-1"><span>{it.name} x{it.qty}</span><span>{rupiah(it.price * it.qty)}</span></div>
+            <div key={i} className="flex justify-between text-sm py-1"><span>{it.name}{it.color ? ` (${it.color}${it.size ? ", " + it.size : ""})` : ""} x{it.qty}</span><span>{rupiah(it.price * it.qty)}</span></div>
           ))}
+          {order.delivery_type === "kirim" ? (
+            <div className="flex justify-between text-sm py-1 opacity-70">
+              <span>Ongkir{order.courier ? ` (${order.courier}${order.shipping_method ? " " + order.shipping_method : ""})` : ""}</span>
+              <span>{rupiah(order.shipping_cost)}</span>
+            </div>
+          ) : (
+            <div className="text-sm py-1 opacity-70">Pickup / Ambil Sendiri</div>
+          )}
         </div>
         <div className="flex justify-between ff-display text-3xl mb-1" style={{ color: C.grape, borderTop: `2px solid ${C.midnight}`, paddingTop: 10 }}>
           <span>TOTAL</span><span>{rupiah(order.total)}</span>
@@ -69,30 +77,37 @@ export default function InvoicePage({ params }) {
             <div className="ff-display text-xl mb-2" style={{ color: C.olive }}>CARA BAYAR</div>
             {order.payment_method && (
               <div className="text-xs mb-3 opacity-70 text-center">
-                Metode yang kamu pilih: <span className="font-semibold">{order.payment_method === "qris" ? "QRIS" : "Transfer Bank"}</span>
+                Metode yang kamu pilih: <span className="font-semibold">{order.payment_method === "qris" ? "QRIS" : order.payment_method === "cash" ? "Cash" : "Transfer Bank"}</span>
               </div>
             )}
-            {(!order.payment_method || order.payment_method === "qris") && payment?.qris_image && (
-              <img src={payment.qris_image} alt="QRIS" className="mb-3" style={{ border: `2px solid ${C.midnight}`, borderRadius: 0, maxWidth: 240, margin: "0 auto", display: "block" }} />
-            )}
-            {(!order.payment_method || order.payment_method === "transfer") && (
-              payment?.bank_name ? (
-                <div className="text-sm mb-4 text-center">
-                  <div>Transfer ke <span className="font-semibold">{payment.bank_name}</span></div>
-                  <div className="ff-display text-2xl" style={{ color: C.grape }}>{payment.bank_account}</div>
-                  <div className="opacity-70">a.n {payment.bank_holder}</div>
-                </div>
-              ) : (
-                <p className="text-sm mb-4 opacity-70">Info rekening belum diisi admin. Hubungi toko untuk detail pembayaran.</p>
-              )
-            )}
-            <div className="ff-display text-xl mb-2" style={{ color: C.grape }}>UPLOAD BUKTI TRANSFER</div>
-            {order.proof_image ? (
-              <p className="text-sm" style={{ color: C.coffee }}>✓ Bukti sudah diterima. Admin akan segera verifikasi.</p>
+
+            {order.payment_method === "cash" ? (
+              <p className="text-sm mb-4 text-center">Bayar tunai langsung pas ambil pesanan ya, gak perlu upload bukti transfer. 🤍</p>
             ) : (
               <>
-                <input type="file" accept="image/*" onChange={handleProofUpload} className="w-full text-sm" disabled={uploading} />
-                {uploading && <p className="text-xs mt-2 opacity-70">Mengunggah...</p>}
+                {(!order.payment_method || order.payment_method === "qris") && payment?.qris_image && (
+                  <img src={payment.qris_image} alt="QRIS" className="mb-3" style={{ border: `2px solid ${C.midnight}`, borderRadius: 0, maxWidth: 240, margin: "0 auto", display: "block" }} />
+                )}
+                {(!order.payment_method || order.payment_method === "transfer") && (
+                  payment?.bank_name ? (
+                    <div className="text-sm mb-4 text-center">
+                      <div>Transfer ke <span className="font-semibold">{payment.bank_name}</span></div>
+                      <div className="ff-display text-2xl" style={{ color: C.grape }}>{payment.bank_account}</div>
+                      <div className="opacity-70">a.n {payment.bank_holder}</div>
+                    </div>
+                  ) : (
+                    <p className="text-sm mb-4 opacity-70">Info rekening belum diisi admin. Hubungi toko untuk detail pembayaran.</p>
+                  )
+                )}
+                <div className="ff-display text-xl mb-2" style={{ color: C.grape }}>UPLOAD BUKTI TRANSFER</div>
+                {order.proof_image ? (
+                  <p className="text-sm" style={{ color: C.coffee }}>✓ Bukti sudah diterima. Admin akan segera verifikasi.</p>
+                ) : (
+                  <>
+                    <input type="file" accept="image/*" onChange={handleProofUpload} className="w-full text-sm" disabled={uploading} />
+                    {uploading && <p className="text-xs mt-2 opacity-70">Mengunggah...</p>}
+                  </>
+                )}
               </>
             )}
           </NeoCard>

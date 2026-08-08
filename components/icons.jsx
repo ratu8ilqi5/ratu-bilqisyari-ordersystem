@@ -32,3 +32,9 @@ export function IconLock() {
 export function IconDelete() {
   return <MatIcon name="delete" />;
 }
+export function IconArrowRight() {
+  return <MatIcon name="arrow_forward" />;
+}
+export function IconArrowLeft() {
+  return <MatIcon name="arrow_back" />;
+}
